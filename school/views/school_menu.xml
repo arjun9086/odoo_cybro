@@ -1,0 +1,10 @@
+<odoo>
+    <menuitem id="school_menu_root" name="School">
+        <menuitem id="student_menu" name="student"/>
+            <menuitem id="student_menu_action" action="student_action"/>
+    <menuitem id="school_faculty" name="faculty">
+        <menuitem id="faculty_menu" action="faculty_action"/>
+
+    </menuitem>
+    </menuitem>
+</odoo>
