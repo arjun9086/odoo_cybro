@@ -20,41 +20,38 @@
     </record>
 
 <!--    form view-->
-<!--<record id="student_form_view" model="ir.ui.view">-->
-<!--    <field name="name">student_form_view</field>-->
-<!--    <field name="model">school.student</field>-->
-<!--    <field name="arch" type="xml"/>-->
-<!--    <form string="name">-->
-<!--        <sheet>-->
-<!--            <div>-->
-<!--                <h2><field name="name"/></h2>-->
-<!--            </div>-->
-<!--            <group>-->
-<!--                <group>-->
-<!--                    <field name='age'/>-->
-<!--                    <field name='admission_no'/>-->
-<!--                </group>-->
-<!--                <group>-->
-<!--                    <field name="class_"/>-->
-<!--                    <field name="class_teacher"/>-->
-<!--                    <field name="guardian"/>-->
-<!--                </group>-->
-<!--            </group>-->
-<!--            <notebook>-->
-<!--                <page string="Address">-->
-<!--                    <group>-->
-<!--                        <field name="address"/>-->
-<!--                    </group>-->
-<!--                </page>-->
-<!--            </notebook>-->
-<!--        </sheet>-->
-<!--    </form>-->
-<!--</record>-->
-
-
-<!--    Faculty-->
-
-
-
+<record id="student_form_view" model="ir.ui.view">
+    <field name="name">student_form_view</field>
+    <field name="model">school.student</field>
+    <field name="arch" type="xml">
+        <form string="name">
+            <sheet>
+                <div>
+                    <group>
+                    <h2><field name="name" string="Name"/></h2>
+                    </group>
+                </div>
+                <group>
+                    <group>
+                        <field name='age'/>
+                        <field name='admission_no'/>
+                    </group>
+                    <group>
+                        <field name="class_"/>
+                        <field name="class_teacher"/>
+                        <field name="guardian"/>
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Address">
+                        <group>
+                            <field name="address"/>
+                        </group>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
 
 </odoo>

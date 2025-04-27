@@ -1,9 +1,13 @@
 <odoo>
     <menuitem id="school_menu_root" name="School">
-        <menuitem id="student_menu" name="student"/>
-            <menuitem id="student_menu_action" action="student_action"/>
-    <menuitem id="school_faculty" name="faculty">
-        <menuitem id="faculty_menu" action="faculty_action"/>
+    <menuitem id="student_menu" name="Student"/>
+    <menuitem id="student_menu_action" action="student_action"/>
+
+<!--        school faculty-->
+    <menuitem id="school_faculty" name="Faculty">
+    <menuitem id="faculty_menu" name="Teachers" action="faculty_action"/>
+    <menuitem id="office_staff" name="Office staff" action="office_staff_action"/>
+    <menuitem id="support_staff" name="Support staff" action="support_staff_action"/>
 
     </menuitem>
     </menuitem>
