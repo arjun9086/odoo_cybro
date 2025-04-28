@@ -1,6 +1,8 @@
+
 <odoo>
+<!--    Teachers-->
     <record id="faculty_action" model="ir.actions.act_window">
-        <field name="name">Teachers</field>
+        <field name="name">Teacher</field>
         <field name="res_model">school.faculty</field>
         <field name="view_mode">list,kanban,form</field>
     </record>
@@ -15,27 +17,27 @@
                     <div class='oe_title'>
                         <h1><field name='name'/></h1>
                     </div>
+                    <group>
+                    <field name="class_" widget="many2many_tags"/>
+                     <field name="subject_ids" widget="many2many_tags"/>
+                     <field name="phone"/>
+                    <field name="department"/>
+                    </group>
+                <notebook>
+                    <page string="Address">
+                     <group>
+                    <field name="address"/>
+                     </group>
+                    </page>
+                </notebook>
                 </sheet>
             </form>
        </field>
     </record>
 
 
-<!--  office staffs-->
-    <record id="office_staff_action" model="ir.actions.act_window">
-        <field name="name">Office Staffs</field>
-        <field name="res_model">school.faculty</field>
-        <field name="view_mode">list,kanban,form</field>
-    </record>
 
 
 
-
-<!--    support staffs-->
-    <record id="support_staff_action" model="ir.actions.act_window">
-        <field name="name">Support Staffs</field>
-        <field name="res_model">school.faculty</field>
-        <field name="view_mode">list,kanban,form</field>
-    </record>
 
 </odoo>

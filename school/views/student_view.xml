@@ -25,33 +25,40 @@
     <field name="model">school.student</field>
     <field name="arch" type="xml">
         <form string="name">
-            <sheet>
-                <div>
+                <sheet>
+                    <div>
+                        <h2><field name="name"/></h2>
+                    </div>
                     <group>
-                    <h2><field name="name" string="Name"/></h2>
-                    </group>
-                </div>
-                <group>
-                    <group>
-                        <field name='age'/>
-                        <field name='admission_no'/>
-                    </group>
-                    <group>
-                        <field name="class_"/>
-                        <field name="class_teacher"/>
-                        <field name="guardian"/>
-                    </group>
-                </group>
-                <notebook>
-                    <page string="Address">
                         <group>
-                            <field name="address"/>
+                            <field name='age'/>
+                            <field name='admission_no'/>
                         </group>
-                    </page>
-                </notebook>
-            </sheet>
+                        <group>
+                            <field name="class_"/>
+                            <field name="class_teacher_"/>
+                            <field name="guardian"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Address">
+                            <group>
+                                <field name="address"/>
+                                <field name="phone_no"/>
+                                <field name="guardian_phone"/>
+                            </group>
+                        </page>
+                        <page string="Subjects">
+                            <group>
+                                <field name="subject"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
         </form>
     </field>
 </record>
+
+    
 
 </odoo>

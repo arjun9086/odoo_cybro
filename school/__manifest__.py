@@ -6,6 +6,10 @@
         'security/ir.model.access.csv',
         'views/student_view.xml',
         'views/school_faculty.xml',
+        'views/school_office_staff.xml',
+        'views/school_department.xml',
+        'views/school_subject.xml',
+        'views/school_class.xml',
         'views/school_menu.xml'
     ]
 }

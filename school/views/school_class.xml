@@ -1,0 +1,36 @@
+<odoo>
+        <record id="class_action" model="ir.actions.act_window">
+        <field name="name">Classes</field>
+        <field name="res_model">school.class</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+<!--form view-->
+    <record id="class_form_view" model="ir.ui.view">
+    <field name="name">class_form_view</field>
+    <field name="model">school.class</field>
+    <field name="arch" type="xml">
+        <form string="name">
+            <sheet>
+                <group>
+                    <field name="name"/>
+                </group>
+                <group>
+                    <field name="class_teacher"/>
+                </group>
+                <notebook>
+                <page string="Subject">
+                    <group>
+                    <field name="subject"/>
+                    </group>
+                </page>
+                <page string="Student">
+                    <group>
+                    <field name="student"/>
+                    </group>
+                </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+    </record>
+</odoo>

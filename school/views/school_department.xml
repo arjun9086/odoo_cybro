@@ -1,0 +1,7 @@
+<odoo>
+        <record id="department_action" model="ir.actions.act_window">
+        <field name="name">Department</field>
+        <field name="res_model">school.department</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+</odoo>
