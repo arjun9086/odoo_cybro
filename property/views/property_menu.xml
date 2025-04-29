@@ -1,0 +1,5 @@
+<odoo>
+        <menuitem id="property_main_menu" name="Property Management"/>
+        <menuitem id="configuration_menu" parent="property_main_menu" name="Configuration" action="property_action"/>
+        <menuitem id="property_menu" parent="configuration_menu" name="Properties" action="property_action"/>
+</odoo>
