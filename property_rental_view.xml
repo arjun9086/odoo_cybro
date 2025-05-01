@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--    sequence number -->
+    <data noupdate="1">
+        <record id="ir_sequence_property_rental" model="ir.sequence">
+            <field name="name">Property Rental Reference Numbers</field>
+            <field name="code">property.rental</field>
+            <field name="prefix">RENT</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+    <!--  Form view  -->
+    <record id="property_rental_view_form" model="ir.ui.view">
+        <field name="name">property.rental.view.form</field>
+        <field name="model">property.rental</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="status" widget="statusbar" options="{'clickable': True}"/>
+                    <button name="confirm" type="object" string="Confirm"/>
+                    <button name="closed" type="object" string="Closed"
+                            modifiers="{'invisible': [('status', '=', 'closed')]}"/>
+                    <button name="returned" type="object" string="Return"/>
+                    <button name="expire" type="object" string="Expire"/>
+                </header>
+                <sheet>
+                    <div class='oe_title'>
+                        <h1>
+                            <field name='reference_number'/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="property_id"/>
+                            <field name="type"/>
+                            <field name="tenant_id"/>
+                            <field name="company"/>
+                        </group>
+                        <group>
+                            <field name="start_date" widget="daterange" options="{'always_range':'true',
+                            'end_date_field':'end_date'}"/>
+                            <field name="remaining_days"/>
+                            <field name="amount"/>
+                            <field name="total_amount"/>
+                            <field name="attachment"/>
+                        </group>
+                    </group>
+                </sheet>
+                <group>
+                    <chatter/>
+                </group>
+            </form>
+        </field>
+    </record>
+    <!--    list view-->
+    <record id="property_rental_list_view" model="ir.ui.view">
+        <field name="name">property.rental.list.view</field>
+        <field name="model">property.rental</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="reference_number"/>
+                <field name='property_id'/>
+                <field name='tenant_id'/>
+                <field name='amount'/>
+                <field name='start_date'/>
+                <field name='status'/>
+            </list>
+        </field>
+    </record>
+    <!--    Action -->
+    <record id="property_rental_action" model="ir.actions.act_window">
+        <field name="name">Rental Management</field>
+        <field name="res_model">property.rental</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+</odoo>
