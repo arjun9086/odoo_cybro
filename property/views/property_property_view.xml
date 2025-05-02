@@ -68,4 +68,20 @@
             </list>
         </field>
     </record>
+<!--    Search view -->
+    <record id="property_property_search_view" model="ir.ui.view">
+        <field name="name">property.property.search.view</field>
+        <field name="model">property.property</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="owner_id"/>
+                <filter string="Can be sold" name="can_be_sold" domain="[('can_be_sold', '=','true')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="country" context="{'group_by':'country'}"/>
+                    <filter string="State" name="state" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
 </odoo>
