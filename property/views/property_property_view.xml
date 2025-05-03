@@ -11,7 +11,13 @@
         <field name="name">property.property.view.form</field>
         <field name="model">property.property</field>
         <field name="arch" type="xml">
-            <form string="name">
+            <form>
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="object" icon="fa-lock" name="action_get_rental_record">
+<!--                        <field name="property_count" widget="stateinfo" string="Rent"-->
+<!--                               action="action_get_rental_record"/>-->
+                    </button>
+                </div>
                 <header>
                     <field name="status" widget="statusbar" options="{'clickable': True}"/>
                 </header>
@@ -68,7 +74,7 @@
             </list>
         </field>
     </record>
-<!--    Search view -->
+    <!--    Search view     -->
     <record id="property_property_search_view" model="ir.ui.view">
         <field name="name">property.property.search.view</field>
         <field name="model">property.property</field>

@@ -8,7 +8,7 @@ class PropertyProperty(models.Model):
     _description = 'Property Management'
     _inherit = ['mail.thread']
 
-    name = fields.Char(required=True)
+    name = fields.Char(string="Name")
     street1 = fields.Char()
     street2 = fields.Char()
     state = fields.Char()
@@ -26,3 +26,21 @@ class PropertyProperty(models.Model):
         default='rented',
         tracking=True
     )
+    property_count = fields.Char(string="count", compute="compute_property_count")
+
+    def compute_property_count(self):
+        """smart button"""
+        for record in self:
+            record.name = self.env['property.rental'].search_count(["property_id", "=", "self.id"])
+
+    def action_get_rental_record(self):
+        """smart button config"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Rentals',
+            'view_mode': 'form',
+            'res_model': 'property.rental',
+            'domain': [('property_id', '=', 'self.name')],
+            'context': "{'create':'false'}"
+        }

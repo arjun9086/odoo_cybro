@@ -8,10 +8,10 @@
             <form>
                 <header>
                     <field name="status" widget="statusbar" options="{'clickable': True}"/>
-                    <button name="confirm" type="object" string="Confirm"/>
-                    <button name="closed" type="object" string="Closed"/>
-                    <button name="returned" type="object" string="Return"/>
-                    <button name="expire" type="object" string="Expire"/>
+                    <button name="confirm" type="object" string="Confirm" invisible="status=='confirm'"/>
+                    <button name="closed" type="object" string="Closed" invisible="status=='closed'"/>
+                    <button name="returned" type="object" string="Return" invisible="status=='returned'"/>
+                    <button name="expire" type="object" string="Expire" invisible="status=='expire'"/>
                 </header>
                 <sheet>
                     <div class='oe_title'>
@@ -85,7 +85,7 @@
     </record>
     <!--    Action -->
     <record id="property_rental_action" model="ir.actions.act_window">
-        <field name="name">Rental</field>
+        <field name="name">Rental Action</field>
         <field name="res_model">property.rental</field>
         <field name="view_mode">list,form,kanban</field>
     </record>
