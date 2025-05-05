@@ -7,6 +7,7 @@
         'security/ir.model.access.csv',
         'views/property_property_view.xml',
         'views/property_rental_view.xml',
+        'views/property_facility_view.xml',
         'views/property_menu.xml'],
-    'depends': ['mail']
+    'depends': ['mail','account']
 }

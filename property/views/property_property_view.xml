@@ -12,16 +12,15 @@
         <field name="model">property.property</field>
         <field name="arch" type="xml">
             <form>
-                <div name="button_box" position="inside">
-                    <button class="oe_stat_button" type="object" icon="fa-lock" name="action_get_rental_record">
-<!--                        <field name="property_count" widget="stateinfo" string="Rent"-->
-<!--                               action="action_get_rental_record"/>-->
-                    </button>
-                </div>
                 <header>
                     <field name="status" widget="statusbar" options="{'clickable': True}"/>
                 </header>
                 <sheet>
+                    <div name="button_box" position="inside">
+                        <button class="oe_stat_button" type="object" icon="fa-lock" name="action_get_rental_record">
+                            <field name="property_count" widget="statinfo"/>
+                        </button>
+                    </div>
                     <field name="image" widget="image" class="oe_right oe_avatar"/>
                     <div class='oe_title'>
                         <h1>
@@ -50,6 +49,12 @@
                         <page string="Description">
                             <field name="description"/>
                         </page>
+                        <page string="Facilities">
+                            <group>
+                                <field name="facility_ids" widget="many2many_tags" options="{'color_field':'color',
+                                'no_quick_create':True ,'no_create_edit':True}"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 <group>
@@ -58,7 +63,7 @@
             </form>
         </field>
     </record>
-    <!--List view-->
+    <!-- List view -->
     <record id="property_property_list_view" model="ir.ui.view">
         <field name="name">property.property.list.view</field>
         <field name="model">property.property</field>
@@ -83,7 +88,7 @@
                 <field name="name"/>
                 <field name="owner_id"/>
                 <filter string="Can be sold" name="can_be_sold" domain="[('can_be_sold', '=','true')]"/>
-                <group expand="0" string="Group By">
+                <group expand="1" string="Group By">
                     <filter string="Country" name="country" context="{'group_by':'country'}"/>
                     <filter string="State" name="state" context="{'group_by':'state'}"/>
                 </group>

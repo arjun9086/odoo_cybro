@@ -8,6 +8,8 @@
             <form>
                 <header>
                     <field name="status" widget="statusbar" options="{'clickable': True}"/>
+<!--                    <button name="invoice" type="object" string="Create Invoice" class="btn-primary"-->
+<!--                            invisible="status=='draft'"/>-->
                     <button name="confirm" type="object" string="Confirm" invisible="status=='confirm'"/>
                     <button name="closed" type="object" string="Closed" invisible="status=='closed'"/>
                     <button name="returned" type="object" string="Return" invisible="status=='returned'"/>
@@ -32,7 +34,6 @@
                             <field name="remaining_days"/>
                             <field name="amount"/>
                             <field name="total_amount"/>
-                            <field name="attachment"/>
                         </group>
                     </group>
                 </sheet>
@@ -70,7 +71,7 @@
             <field name="company_id" eval="False"/>
         </record>
     </data>
-    <!--  Search view & custom group by and filter search -->
+    <!--  Search view,custom group by and filter search -->
     <record id="property_rental_search_view" model="ir.ui.view">
         <field name="name">property.rental.search.view</field>
         <field name="model">property.rental</field>
@@ -85,7 +86,7 @@
     </record>
     <!--    Action -->
     <record id="property_rental_action" model="ir.actions.act_window">
-        <field name="name">Rental Action</field>
+        <field name="name">Rental</field>
         <field name="res_model">property.rental</field>
         <field name="view_mode">list,form,kanban</field>
     </record>

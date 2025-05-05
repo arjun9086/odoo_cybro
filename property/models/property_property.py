@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+"""utf8"""
 from odoo import models, fields
 
 
 class PropertyProperty(models.Model):
-    """class Property_Property """
+    """class for Property_Property """
     _name = "property.property"
     _description = 'Property Management'
     _inherit = ['mail.thread']
@@ -26,21 +27,23 @@ class PropertyProperty(models.Model):
         default='rented',
         tracking=True
     )
-    property_count = fields.Char(string="count", compute="compute_property_count")
+    property_count = fields.Integer(string="Rent", compute="compute_property_count")
+    bedroom = fields.Integer(string="Bedrooms Available", default=2)
+    facility_ids = fields.Many2many("property.facility", string="Facilities")
 
     def compute_property_count(self):
         """smart button"""
         for record in self:
-            record.name = self.env['property.rental'].search_count(["property_id", "=", "self.id"])
+            record.property_count = self.env['property.rental'].search_count([("property_id", "=", self.id)])
 
     def action_get_rental_record(self):
         """smart button config"""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Rentals',
-            'view_mode': 'form',
+            'name': 'Rental',
+            'view_mode': 'list,form',
             'res_model': 'property.rental',
-            'domain': [('property_id', '=', 'self.name')],
-            'context': "{'create':'false'}"
+            'domain': [('property_id', '=', self.id)],
+            'context': "{'create': False}"
         }
