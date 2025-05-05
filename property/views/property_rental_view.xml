@@ -8,8 +8,8 @@
             <form>
                 <header>
                     <field name="status" widget="statusbar" options="{'clickable': True}"/>
-<!--                    <button name="invoice" type="object" string="Create Invoice" class="btn-primary"-->
-<!--                            invisible="status=='draft'"/>-->
+                    <button name="invoice" type="object" string="Create Invoice" class="btn-primary"
+                            invisible="status=='draft'"/>
                     <button name="confirm" type="object" string="Confirm" invisible="status=='confirm'"/>
                     <button name="closed" type="object" string="Closed" invisible="status=='closed'"/>
                     <button name="returned" type="object" string="Return" invisible="status=='returned'"/>
@@ -84,6 +84,14 @@
             </search>
         </field>
     </record>
+<!--&lt;!&ndash;    inherited view &ndash;&gt;-->
+<!--    <record id="account_move_view_form" model="ir.ui.view">-->
+<!--    <field name="name">account.model.form.inherit.test</field>-->
+<!--    <field name="model">inherited.model</field>-->
+<!--    <field name="inherit_id" ref="inherited.inherited_model_view_form"/>-->
+<!--    <field name="arch" type="xml">-->
+<!--    </field>-->
+<!--    </record>-->
     <!--    Action -->
     <record id="property_rental_action" model="ir.actions.act_window">
         <field name="name">Rental</field>
