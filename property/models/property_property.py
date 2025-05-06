@@ -34,7 +34,7 @@ class PropertyProperty(models.Model):
     def compute_property_count(self):
         """smart button"""
         for record in self:
-            record.property_count = self.env['property.rental'].search_count([("property_id", "=", self.id)])
+            record.property_count = self.env['property.rental'].search_count([("property_ids", "=", self.id)])
 
     def action_get_rental_record(self):
         """smart button config"""
@@ -44,6 +44,6 @@ class PropertyProperty(models.Model):
             'name': 'Rental',
             'view_mode': 'list,form',
             'res_model': 'property.rental',
-            'domain': [('property_id', '=', self.id)],
+            'domain': [('property_ids', '=', self.id)],
             'context': "{'create': False}"
         }

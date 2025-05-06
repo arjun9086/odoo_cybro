@@ -8,6 +8,7 @@
         'views/property_property_view.xml',
         'views/property_rental_view.xml',
         'views/property_facility_view.xml',
+        'views/property_account_move_view.xml',
         'views/property_menu.xml'],
-    'depends': ['mail','account']
+    'depends': ['base','mail', 'account', 'sale']
 }

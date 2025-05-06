@@ -13,12 +13,13 @@ class PropertyRental(models.Model):
 
     name = fields.Char(string="Sequence number", default=lambda self: 'New', readonly=True)
     type = fields.Selection(selection=[('rent', 'Rent'), ('lease', 'Lease')])
-    property_id = fields.Many2one("property.property", string="Property")
+    # property_id = fields.Many2one("property.property", string="Property")
+    property_ids = fields.Many2many("property.property", string="Property")
     tenant_id = fields.Many2one("res.partner", string="Tenant")
     amount = fields.Integer(string="Amount")
     start_date = fields.Date(string="Period")
     end_date = fields.Date(string="End date")
-    total_amount = fields.Integer(string="Total Amount", related="property_id.legal_amount")
+    total_amount = fields.Integer(string="Total Amount", related="property_ids.legal_amount")
     status = fields.Selection(
         selection=[('draft', 'Draft'), ('confirm', 'Confirmed'), ('closed', 'Closed'), ('returned', 'Returned'),
                    ('expired', 'Expired')],
@@ -28,15 +29,23 @@ class PropertyRental(models.Model):
     remaining_days = fields.Char(string="Remaining days", compute='_compute_remaining_days', store=True)
     company_id = fields.Many2one('res.company')
 
-    def invoice(self):
+    def invoice_form(self):
         """Invoice creation"""
-        return
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'invoice',
+            'view_mode': 'list,form',
+            'res_model': 'account.move',
+            'domain': [('id', 'in',)],
+            'context': "{}"
+        }
 
     @api.model_create_multi
     def create(self, vals_list):
         """Automatically generate a reference number for rental."""
         for vals in vals_list:
-            if vals.get('name', 'New'):
+            if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('property.rental')
         return super(PropertyRental, self).create(vals_list)
 
