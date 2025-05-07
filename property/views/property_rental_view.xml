@@ -7,15 +7,21 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="status" widget="statusbar" options="{'clickable': True}"/>
                     <button name="invoice_form" type="object" string="Create Invoice" class="btn-primary"
                             invisible="status=='draft'"/>
                     <button name="confirm" type="object" string="Confirm" invisible="status=='confirm'"/>
                     <button name="closed" type="object" string="Closed" invisible="status=='closed'"/>
                     <button name="returned" type="object" string="Return" invisible="status=='returned'"/>
                     <button name="expire" type="object" string="Expire" invisible="status=='expire'"/>
+                    <field name="status" widget="statusbar" options="{'clickable': True}"/>
+
                 </header>
                 <sheet>
+                    <div name="button_box" position="inside">
+                        <button class="oe_stat_button" type="object" icon="fa-book" name="action_get_invoice_record">
+                            <field name="rental_count" widget="statinfo"/>
+                        </button>
+                    </div>
                     <div class='oe_title'>
                         <h1>
                             <field name='name'/>
@@ -23,7 +29,6 @@
                     </div>
                     <group>
                         <group>
-<!--                            <field name="property_id"/>-->
                             <field name="type"/>
                             <field name="tenant_id"/>
                             <field name="company_id"/>
@@ -55,7 +60,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-<!--                <field name='property_id'/>-->
+                <!--                <field name='property_id'/>-->
                 <field name='tenant_id'/>
                 <field name='amount'/>
                 <field name='start_date'/>
@@ -89,6 +94,7 @@
             </search>
         </field>
     </record>
+    <!--    Action -->
     <record id="property_rental_action" model="ir.actions.act_window">
         <field name="name">Rental</field>
         <field name="res_model">property.rental</field>

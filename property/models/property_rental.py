@@ -13,8 +13,7 @@ class PropertyRental(models.Model):
 
     name = fields.Char(string="Sequence number", default=lambda self: 'New', readonly=True)
     type = fields.Selection(selection=[('rent', 'Rent'), ('lease', 'Lease')])
-    # property_id = fields.Many2one("property.property", string="Property")
-    property_ids = fields.Many2many("property.property", string="Property")
+    property_ids = fields.Many2many("property.property", string="Property",required=True)
     tenant_id = fields.Many2one("res.partner", string="Tenant")
     amount = fields.Integer(string="Amount")
     start_date = fields.Date(string="Period")
@@ -28,16 +27,50 @@ class PropertyRental(models.Model):
         tracking=True)
     remaining_days = fields.Char(string="Remaining days", compute='_compute_remaining_days', store=True)
     company_id = fields.Many2one('res.company')
+    rental_count = fields.Integer(string="Invoice", compute="compute_rental_count")
 
-    def invoice_form(self):
-        """Invoice creation"""
+    def compute_rental_count(self):
+        """smart button"""
+        for record in self:
+            record.rental_count = self.env['account.move'].search_count([("rental_id", "=", self.id)])
+
+    def action_get_invoice_record(self):
+        """smart button config"""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'invoice',
+            'name': 'Invoice',
             'view_mode': 'list,form',
             'res_model': 'account.move',
-            'domain': [('id', 'in',)],
+            'domain': [('rental_id', '=', self.id)],
+            'context': {'create': False}
+        }
+
+    def invoice_form(self):
+        """Invoice creation"""
+        invoice_lines = []
+        for propertys in self.property_ids:
+            line = {
+                'name': propertys.name,
+                'quantity': 1,
+                'price_unit': propertys.rent,
+            }
+            invoice_lines.append((0, 0, line))
+
+        invoice = self.env['account.move'].create([{
+            'move_type': 'out_invoice',
+            'partner_id': self.tenant_id.id,
+            'invoice_date': fields.Date.today(),
+            'invoice_line_ids': invoice_lines,
+        }])
+        return{
+            'type': 'ir.actions.act_window',
+            'name': 'invoice',
+            'view_mode': 'form,list',
+            'res_model': 'account.move',
+            'res_id': invoice.id,
+            'target': 'current',
+            'domain': [],
             'context': "{}"
         }
 

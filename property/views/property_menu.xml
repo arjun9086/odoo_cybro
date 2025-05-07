@@ -5,4 +5,5 @@
     <menuitem id="property_menu" parent="property_main_menu" name="Properties" action="property_action"/>
     <menuitem id="property_rental_menu" parent="configuration_menu" action="property_rental_action"/>
     <menuitem id="property_facility_menu" parent="configuration_menu" action="property_facility_action"/>
+    <menuitem id="property_account_move_menu" parent="configuration_menu" action="property_account_move_action"/>
 </odoo>
