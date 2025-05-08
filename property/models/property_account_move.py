@@ -8,6 +8,5 @@ class AccountMove(models.Model):
     _inherit = ['account.move']
     _description = 'Property Invoice'
 
-    rental_id = fields.Many2one('property.rental', string="Rent id")
-
+    rental_id = fields.Many2one('property.rental', string="Rent id", readonly=True)
 

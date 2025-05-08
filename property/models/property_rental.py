@@ -13,12 +13,13 @@ class PropertyRental(models.Model):
 
     name = fields.Char(string="Sequence number", default=lambda self: 'New', readonly=True)
     type = fields.Selection(selection=[('rent', 'Rent'), ('lease', 'Lease')])
-    property_ids = fields.Many2many("property.property", string="Property",required=True)
+    property_ids = fields.One2many('property.property', 'amount_', string="Property",
+                                   required=True)
     tenant_id = fields.Many2one("res.partner", string="Tenant")
     amount = fields.Integer(string="Amount")
     start_date = fields.Date(string="Period")
     end_date = fields.Date(string="End date")
-    total_amount = fields.Integer(string="Total Amount", related="property_ids.legal_amount")
+    # total_amount = fields.Integer(string="Total Amount", related="property_ids.legal_amount")
     status = fields.Selection(
         selection=[('draft', 'Draft'), ('confirm', 'Confirmed'), ('closed', 'Closed'), ('returned', 'Returned'),
                    ('expired', 'Expired')],
@@ -27,6 +28,7 @@ class PropertyRental(models.Model):
         tracking=True)
     remaining_days = fields.Char(string="Remaining days", compute='_compute_remaining_days', store=True)
     company_id = fields.Many2one('res.company')
+    # invoice_ids = fields.Many2one('account.move')
     rental_count = fields.Integer(string="Invoice", compute="compute_rental_count")
 
     def compute_rental_count(self):
@@ -55,15 +57,31 @@ class PropertyRental(models.Model):
                 'quantity': 1,
                 'price_unit': propertys.rent,
             }
-            invoice_lines.append((0, 0, line))
-
-        invoice = self.env['account.move'].create([{
+            invoice_lines.append((0, None, line))
+        draft_invoice = self.env['account.move'].search([
+            ('rental_id', '=', self.id),
+            ('move_type', '=', 'out_invoice'),
+            ('state', '=', 'draft'),
+        ])
+        invoice = draft_invoice if draft_invoice else (self.env['account.move'].create([{
             'move_type': 'out_invoice',
             'partner_id': self.tenant_id.id,
             'invoice_date': fields.Date.today(),
             'invoice_line_ids': invoice_lines,
-        }])
-        return{
+            'rental_id': self.id
+        }]))
+        # existing_products = invoice.invoice_line_ids.mapped('product_id.id')
+        # new_lines = []
+        # for lines in :
+        #     if lines.product_id.id not in existing_products:
+        #         new_lines.append((0, 0, {
+        #             'product_id': lines.product_id.id,
+        #             'quantity': lines.quantity,
+        #             'price_unit': lines.price_unit,
+        #             'name': lines.product_id.name,
+        #         }))
+        # invoice.update({'invoice_line_ids': new_lines})
+        return {
             'type': 'ir.actions.act_window',
             'name': 'invoice',
             'view_mode': 'form,list',
@@ -73,6 +91,7 @@ class PropertyRental(models.Model):
             'domain': [],
             'context': "{}"
         }
+
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -93,7 +112,7 @@ class PropertyRental(models.Model):
 
     def confirm(self):
         """Confirm state"""
-        if self.message_attachment_count != 0:
+        if self.message_attachment_count == 0:
             self.write({'status': 'confirm'})
         else:
             raise ValidationError("At least 1 file must be attached")

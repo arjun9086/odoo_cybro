@@ -14,7 +14,6 @@
                     <button name="returned" type="object" string="Return" invisible="status=='returned'"/>
                     <button name="expire" type="object" string="Expire" invisible="status=='expire'"/>
                     <field name="status" widget="statusbar" options="{'clickable': True}"/>
-
                 </header>
                 <sheet>
                     <div name="button_box" position="inside">
@@ -38,12 +37,12 @@
                             'end_date_field':'end_date'}"/>
                             <field name="remaining_days"/>
                             <field name="amount"/>
-                            <field name="total_amount"/>
+<!--                            <field name="total_amount"/>-->
                         </group>
                     </group>
                     <notebook>
                         <page string="Properties">
-                            <field name="property_ids"/>
+                            <field name="property_ids" widget="sol_o2m" readonly="status == 'draft'"/>
                         </page>
                     </notebook>
                 </sheet>

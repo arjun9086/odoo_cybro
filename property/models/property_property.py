@@ -30,7 +30,7 @@ class PropertyProperty(models.Model):
     property_count = fields.Integer(string="Rent", compute="compute_property_count")
     bedroom = fields.Integer(string="Bedrooms Available", default=2)
     facility_ids = fields.Many2many("property.facility", string="Facilities")
-
+    amount_ = fields.Many2one('property.rental')
     def compute_property_count(self):
         """smart button"""
         for record in self:
