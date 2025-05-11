@@ -14,13 +14,12 @@ class PropertyRental(models.Model):
 
     name = fields.Char(string="Sequence number", default=lambda self: 'New', readonly=True)
     type = fields.Selection(selection=[('rent', 'Rent'), ('lease', 'Lease')])
-    property_ids = fields.Many2many('property.property', string="Property",
-                                   required=True)
+    property_ids = fields.One2many('property.line','property_id',string='Property')
     tenant_id = fields.Many2one("res.partner", string="Tenant")
     amount = fields.Integer(string="Amount")
     start_date = fields.Date(string="Period")
     end_date = fields.Date(string="End date")
-    total_amount = fields.Integer(string="Total Amount", related="property_ids.legal_amount")
+    # total_amount = fields.Integer(string="Total Amount", related="property_ids.legal_amount")
     status = fields.Selection(
         selection=[('draft', 'Draft'), ('confirm', 'Confirmed'), ('closed', 'Closed'), ('returned', 'Returned'),
                    ('expired', 'Expired')],
@@ -31,6 +30,7 @@ class PropertyRental(models.Model):
     company_id = fields.Many2one('res.company')
     # invoice_ids = fields.Many2one('account.move')
     rental_count = fields.Integer(string="Invoice", compute="compute_rental_count")
+    invoiced_qty = fields.Float(string="Invoiced Quantity", default=0.0)
 
     def compute_rental_count(self):
         """smart button"""
@@ -49,85 +49,46 @@ class PropertyRental(models.Model):
             'context': {'create': False}
         }
 
-    # def invoice_form(self):
-    #     """Invoice creation"""
-    #     # AccountMove = self.env['account.move']
-        # existing_invoice = AccountMove.search([
-        #     ('rental_id', '=', self.id),
-        #     ('state', '=', 'draft')
-        # ], limit=1)
-        #
-        # invoice_lines = []
-        # for property in self.property_ids:
-        #     line = {
-        #         'name': property.name,
-        #         'quantity': 1,
-        #         'price_unit': property.rent,
-        #     }
-        #     invoice_lines.append((0, 0, line))
-        #
-        # if existing_invoice:
-        #     # Overwrite existing lines to match rental record
-        #     existing_invoice.invoice_line_ids.unlink()  # Clear existing lines
-        #     existing_invoice.write({'invoice_line_ids': invoice_lines})
-        #     invoice = existing_invoice
-        # else:
-        #     # Create new invoice
-        #     invoice = AccountMove.create({
-        #         'move_type': 'out_invoice',
-        #         'partner_id': self.tenant_id.id,
-        #         'invoice_date': fields.Date.today(),
-        #         'invoice_line_ids': invoice_lines,
-        #         'rental_id': self.id
-        #     })
-        #
-        # return {
-        #     'type': 'ir.actions.act_window',
-        #     'name': 'Invoice',
-        #     'res_model': 'account.move',
-        #     'res_id': invoice.id,
-        #     'view_mode': 'form',
-        #     'target': 'current',
-        # }
-
     def invoice_form(self):
-        """Create or reuse a draft invoice with uninvoiced properties only"""
         AccountMove = self.env['account.move']
         AccountMoveLine = self.env['account.move.line']
 
-        # Step 1: Get all product_ids (properties) already invoiced in POSTED invoices
+        # Step 1: Calculate invoiced quantities from posted invoices
         posted_invoices = AccountMove.search([
             ('rental_id', '=', self.id),
             ('state', '=', 'posted')
         ])
-        invoiced_property_names = posted_invoices.mapped('invoice_line_ids.name')
 
-        # Step 2: Filter rental properties not yet invoiced
-        uninvoiced_properties = self.property_ids.filtered(
-            lambda prop: prop.name not in invoiced_property_names
-        )
+        property_qty_map = {}
+        for inv in posted_invoices:
+            for line in inv.invoice_line_ids:
+                property = self.property_ids.filtered(lambda p: p.name.name == line.name)
+                if property:
+                    property = property[0]
+                    property_qty_map.setdefault(property.id, 0)
+                    property_qty_map[property.id] += line.quantity
 
-        if not uninvoiced_properties:
-            raise UserError("All rental properties have already been invoiced.")
-
-        # Step 3: Prepare invoice lines only for uninvoiced properties
+        # Step 2: Update invoiced_qty field and prepare remaining lines
         invoice_lines = []
-        for property in uninvoiced_properties:
-            line = {
-                'name': property.name,
-                'quantity': 1,
-                'price_unit': property.rent,
-            }
-            invoice_lines.append((0, 0, line))
+        for property in self.property_ids:
+            invoiced_qty = property_qty_map.get(property.id, 0)
+            property.invoiced_qty = invoiced_qty  # Optional: store for UI/debug
+            remaining_qty = property.quantity - invoiced_qty
 
-        # Step 4: Check for existing draft invoice
+            if remaining_qty > 0:
+                invoice_lines.append((0, 0, {
+                    'name': property.name.name,
+                    'quantity': remaining_qty,
+                    'price_unit': property.rent,
+                }))
+
+        # Step 3: Check for existing draft invoice
         draft_invoice = AccountMove.search([
             ('rental_id', '=', self.id),
             ('state', '=', 'draft')
         ], limit=1)
 
         if draft_invoice:
-            # Only add new lines for uninvoiced properties
             existing_names = draft_invoice.mapped('invoice_line_ids.name')
             new_lines = [
                 line for line in invoice_lines if line[2]['name'] not in existing_names
@@ -136,12 +97,12 @@ class PropertyRental(models.Model):
                 draft_invoice.write({'invoice_line_ids': new_lines})
             invoice = draft_invoice
         else:
-            # Create new invoice
+            # Create new invoice even if empty
             invoice = AccountMove.create({
                 'move_type': 'out_invoice',
                 'partner_id': self.tenant_id.id,
                 'invoice_date': fields.Date.today(),
-                'invoice_line_ids': invoice_lines,
+                'invoice_line_ids': invoice_lines,  # May be empty
                 'rental_id': self.id
             })
 
@@ -153,6 +114,70 @@ class PropertyRental(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
+
+    # def invoice_form(self):
+    #     """Create or reuse a draft invoice with uninvoiced properties only"""
+    #     AccountMove = self.env['account.move']
+    #     AccountMoveLine = self.env['account.move.line']
+    #
+    #     # Step 1: Get all product_ids (properties) already invoiced in POSTED invoices
+    #     posted_invoices = AccountMove.search([
+    #         ('rental_id', '=', self.id),
+    #         ('state', '=', 'posted')
+    #     ])
+    #     invoiced_property_names = posted_invoices.mapped('invoice_line_ids.name')
+    #
+    #     # Step 2: Filter rental properties not yet invoiced
+    #     uninvoiced_properties = self.property_ids.filtered(
+    #         lambda prop: prop.name not in invoiced_property_names
+    #     )
+    #
+    #     if not uninvoiced_properties:
+    #         raise UserError("All rental properties have already been invoiced.")
+    #
+    #     # Step 3: Prepare invoice lines only for uninvoiced properties
+    #     invoice_lines = []
+    #     for property in uninvoiced_properties:
+    #         line = {
+    #             'name': property.name.name,
+    #             'quantity': property.quantity,
+    #             'price_unit': property.rent,
+    #         }
+    #         invoice_lines.append((0, 0, line))
+    #
+    #     # Step 4: Check for existing draft invoice
+    #     draft_invoice = AccountMove.search([
+    #         ('rental_id', '=', self.id),
+    #         ('state', '=', 'draft')
+    #     ], limit=1)
+    #
+    #     if draft_invoice:
+    #         # Only add new lines for uninvoiced properties
+    #         existing_names = draft_invoice.mapped('invoice_line_ids.name')
+    #         new_lines = [
+    #             line for line in invoice_lines if line[2]['name'] not in existing_names
+    #         ]
+    #         if new_lines:
+    #             draft_invoice.write({'invoice_line_ids': new_lines})
+    #         invoice = draft_invoice
+    #     else:
+    #         # Create new invoice
+    #         invoice = AccountMove.create({
+    #             'move_type': 'out_invoice',
+    #             'partner_id': self.tenant_id.id,
+    #             'invoice_date': fields.Date.today(),
+    #             'invoice_line_ids': invoice_lines,
+    #             'rental_id': self.id
+    #         })
+    #
+    #     return {
+    #         'type': 'ir.actions.act_window',
+    #         'name': 'Invoice',
+    #         'res_model': 'account.move',
+    #         'res_id': invoice.id,
+    #         'view_mode': 'form',
+    #         'target': 'current',
+    #     }
 
     @api.model_create_multi
     def create(self, vals_list):
