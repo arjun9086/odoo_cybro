@@ -6,7 +6,7 @@
         <field name="res_model">property.property</field>
         <field name="view_mode">list,form,kanban</field>
     </record>
-    <!--    Form view -->
+    <!--  Form view  -->
     <record id="property_property_view_form" model="ir.ui.view">
         <field name="name">property.property.view.form</field>
         <field name="model">property.property</field>
@@ -33,8 +33,8 @@
                             <div class="o_address_format">
                                 <field name="street1" placeholder="Street..."/>
                                 <field name="street2" placeholder="Street 2..."/>
-                                <field name="state" placeholder="State..."/>
-                                <field name="country" placeholder="country..."/>
+                                <field name="state_id" placeholder="State..."/>
+                                <field name="country_id" placeholder="country..."/>
                             </div>
                             <field name="owner_id"/>
                             <field name="can_be_sold"/>
@@ -73,8 +73,8 @@
                 <field name='owner_id'/>
                 <field name='built_date'/>
                 <field name="can_be_sold"/>
-                <field name='state'/>
-                <field name='country'/>
+                <field name='state_id'/>
+                <field name='country_id'/>
                 <field name="status"/>
             </list>
         </field>
@@ -89,8 +89,8 @@
                 <field name="owner_id"/>
                 <filter string="Can be sold" name="can_be_sold" domain="[('can_be_sold', '=','true')]"/>
                 <group expand="1" string="Group By">
-                    <filter string="Country" name="country" context="{'group_by':'country'}"/>
-                    <filter string="State" name="state" context="{'group_by':'state'}"/>
+                    <filter string="Country" name="country" context="{'group_by':'country_id'}"/>
+                    <filter string="State" name="state" context="{'group_by':'state_id'}"/>
                 </group>
             </search>
         </field>

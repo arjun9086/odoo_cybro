@@ -15,7 +15,6 @@ class PropertyRental(models.Model):
     type = fields.Selection(selection=[('rent', 'Rent'), ('lease', 'Lease')])
     property_ids = fields.One2many('property.line', 'property_inverse_id', string="Property")
     tenant_id = fields.Many2one("res.partner", string="Tenant")
-    # amount = fields.Integer(string="Amount")
     start_date = fields.Date(string="Period")
     end_date = fields.Date(string="End date")
     status = fields.Selection(
@@ -24,7 +23,7 @@ class PropertyRental(models.Model):
         string='Status',
         default='draft',
         tracking=True)
-    remaining_days = fields.Char(string="Remaining days", compute='_compute_remaining_days', store=True)
+    remaining_days = fields.Float(string="Remaining days", compute='_compute_remaining_days', store=True)
     company_id = fields.Many2one('res.company')
     rental_count = fields.Integer(string="Invoice", compute="_compute_rental_count")
 
@@ -32,8 +31,8 @@ class PropertyRental(models.Model):
     def _compute_remaining_days(self):
         """remaining date"""
         for record in self:
-            if record.end_date and record.start_date:
-                record.remaining_days = record.end_date - record.start_date
+            if record.end_date:
+                record.remaining_days = max((record.end_date - record.start_date).days, 0)
             else:
                 record.remaining_days = 0
 
@@ -48,6 +47,7 @@ class PropertyRental(models.Model):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('property.rental')
+                # print('vals=', vals_list)
         return super(PropertyRental, self).create(vals_list)
 
     def action_get_invoice_record(self):
@@ -65,37 +65,29 @@ class PropertyRental(models.Model):
     def action_create_invoice(self):
         """Invoice creation"""
         accountmove = self.env['account.move']
-        # invoiced quantities
-        posted_invoices = accountmove.search([
-            ('rental_id', '=', self.id),
-            ('state', '=', 'posted')
+        posted_invoice = self.env['account.move.line'].search([
+            ('move_id.rental_id', '=', self.id),
+            ('move_id.state', '=', 'posted')
         ])
-        property_qty_map = {}
-        for inv in posted_invoices:
-            for line in inv.invoice_line_ids:
-                property = self.property_ids.filtered(lambda p: p.property_id.name == line.name)
-                if property:
-                    property = property[0]
-                    property_qty_map.setdefault(property.id, 0)
-                    property_qty_map[property.id] += line.quantity
-        # remaining lines
         invoice_lines = []
-        for property in self.property_ids:
-            invoiced_qty = property_qty_map.get(property.id, 0)
-            property.invoiced_qty = invoiced_qty
-            remaining_qty = property.quantity_ - invoiced_qty
-
+        for line in self.property_ids:
+            posted_line = posted_invoice.filtered(lambda l: l.name == line.property_id.name)
+            invoiced_qty = sum(posted_line.mapped('quantity'))
+            remaining_qty = line.quantity_ - invoiced_qty
+            # print('prop quantity', line.quantity_)
+            # print('invoiced', invoiced_qty)
             if remaining_qty > 0:
                 invoice_lines.append((0, 0, {
-                    'name': property.property_id.name,
+                    'name': line.property_id.name,
                     'quantity': remaining_qty,
-                    'price_unit': property.rent,
+                    'price_unit': line.rent,
                 }))
         # existing draft invoice
         draft_invoice = accountmove.search([
             ('rental_id', '=', self.id),
             ('state', '=', 'draft')
         ])
+        # to check draft invoice exist and new line=>avoid duplicating lines already in the draft.
         if draft_invoice:
             existing_names = draft_invoice.mapped('invoice_line_ids.name')
             new_lines = [
@@ -105,7 +97,7 @@ class PropertyRental(models.Model):
                 draft_invoice.write({'invoice_line_ids': new_lines})
             invoice = draft_invoice
         else:
-            #  create invoice if empty
+            #  create invoice if there is no draft invoice
             invoice = accountmove.create({
                 'move_type': 'out_invoice',
                 'partner_id': self.tenant_id.id,
@@ -113,6 +105,7 @@ class PropertyRental(models.Model):
                 'invoice_line_ids': invoice_lines,
                 'rental_id': self.id
             })
+        #return to open the invoice form.
         return {
             'type': 'ir.actions.act_window',
             'name': 'Invoice',

@@ -36,7 +36,6 @@
                             <field name="start_date" widget="daterange" options="{'always_range':'true',
                             'end_date_field':'end_date'}"/>
                             <field name="remaining_days"/>
-<!--                            <field name="amount"/>-->
                         </group>
                     </group>
                     <notebook>
@@ -66,7 +65,6 @@
             <list>
                 <field name="name"/>
                 <field name='tenant_id'/>
-<!--                <field name='amount'/>-->
                 <field name='start_date'/>
                 <field name='status'/>
                 <field name="remaining_days"/>
