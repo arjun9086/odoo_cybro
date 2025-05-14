@@ -63,49 +63,70 @@ class PropertyRental(models.Model):
         }
 
     def action_create_invoice(self):
-        """Invoice creation"""
+        # """Invoice creation"""
+        """Create or update invoice with correct remaining qty and link invoice lines"""
         accountmove = self.env['account.move']
-        posted_invoice = self.env['account.move.line'].search([
-            ('move_id.rental_id', '=', self.id),
-            ('move_id.state', '=', 'posted')
-        ])
         invoice_lines = []
+
         for line in self.property_ids:
-            posted_line = posted_invoice.filtered(lambda l: l.name == line.property_id.name)
-            invoiced_qty = sum(posted_line.mapped('quantity'))
+            # posted invoice lines
+            posted_lines = line.invoice_line_ids.filtered(lambda l: l.move_id.state == 'posted')
+            invoiced_qty = sum(posted_lines.mapped('quantity'))
             remaining_qty = line.quantity_ - invoiced_qty
-            # print('prop quantity', line.quantity_)
-            # print('invoiced', invoiced_qty)
+            print(f"Invoiced: {invoiced_qty}, Remaining: {remaining_qty}")
             if remaining_qty > 0:
-                invoice_lines.append((0, 0, {
+                invoice_lines.append({
                     'name': line.property_id.name,
                     'quantity': remaining_qty,
                     'price_unit': line.rent,
-                }))
-        # existing draft invoice
+                    'invoice_line': line  # link
+                })
+
+        if not invoice_lines:
+            return
+
         draft_invoice = accountmove.search([
             ('rental_id', '=', self.id),
             ('state', '=', 'draft')
         ])
-        # to check draft invoice exist and new line=>avoid duplicating lines already in the draft.
+        # created_invoice_lines = []
         if draft_invoice:
-            existing_names = draft_invoice.mapped('invoice_line_ids.name')
-            new_lines = [
-                line for line in invoice_lines if line[2]['name'] not in existing_names
-            ]
+            existing_names = set(draft_invoice.invoice_line_ids.mapped('name'))
+            new_lines = []
+            for vals in invoice_lines:
+                if vals['name'] not in existing_names:
+                    line_vals = {
+                        'name': vals['name'],
+                        'quantity': vals['quantity'],
+                        'price_unit': vals['price_unit'],
+                    }
+                    new_lines.append((0, 0, line_vals))
             if new_lines:
                 draft_invoice.write({'invoice_line_ids': new_lines})
             invoice = draft_invoice
         else:
-            #  create invoice if there is no draft invoice
+            # Create new invoice
+            new_invoice_lines = [
+                (0, 0, {
+                    'name': vals['name'],
+                    'quantity': vals['quantity'],
+                    'price_unit': vals['price_unit'],
+                })
+                for vals in invoice_lines
+            ]
             invoice = accountmove.create({
                 'move_type': 'out_invoice',
                 'partner_id': self.tenant_id.id,
                 'invoice_date': fields.Date.today(),
-                'invoice_line_ids': invoice_lines,
+                'invoice_line_ids': new_invoice_lines,
                 'rental_id': self.id
             })
-        #return to open the invoice form.
+        # link created invoice lines back to property lines
+        for vals in invoice_lines:
+            line = vals['invoice_line']
+            inv_line = invoice.invoice_line_ids.filtered(lambda l: l.name == vals['name'])
+            if inv_line:
+                line.invoice_line_ids |= inv_line
         return {
             'type': 'ir.actions.act_window',
             'name': 'Invoice',
