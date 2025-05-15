@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Server Action on Stock Picking Done -->
+    <record id="action_change_state_on_due_date" model="ir.actions.server">
+        <field name="name">Change state on due date</field>
+        <field name="model_id" ref="property.model_property_rental"/>
+        <field name="type">code</field>
+        <field name="code">
+            <!--            purchase_order = record.purchase_id-->
+            <!--            if purchase_order and purchase_order.invoice_status == 'to invoice':-->
+            <!--            purchase_order.action_create_invoice()-->
+        </field>
+    </record>
+    <!-- Automated Action on Stock Picking Done -->
+    <record id="automated_action_change_state_on_due_date" model="base.automation">
+        <field name="name">Change to expired on due date</field>
+        <field name="model_id" ref="property.model_property_rental"/>
+        <field name="trigger">function_name</field>
+        <field name="filter_domain">[('state', '=', 'not paid')]</field>
+        <field name="action_server_ids" eval="[(4, ref('action_change_state_on_due_date'))]"/>
+    </record>
+
+</odoo>

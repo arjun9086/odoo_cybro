@@ -63,57 +63,36 @@ class PropertyRental(models.Model):
         }
 
     def action_create_invoice(self):
-        # """Invoice creation"""
-        """Create or update invoice with correct remaining qty and link invoice lines"""
+        """Invoice creation"""
         accountmove = self.env['account.move']
         invoice_lines = []
-
+        # posted invoice
         for line in self.property_ids:
-            # posted invoice lines
-            posted_lines = line.invoice_line_ids.filtered(lambda l: l.move_id.state == 'posted')
-            invoiced_qty = sum(posted_lines.mapped('quantity'))
-            remaining_qty = line.quantity_ - invoiced_qty
-            print(f"Invoiced: {invoiced_qty}, Remaining: {remaining_qty}")
+            posted_qty = sum(line.invoice_line_ids.filtered(lambda l: l.move_id.state == 'posted').mapped('quantity'))
+            remaining_qty = line.quantity_ - posted_qty
             if remaining_qty > 0:
                 invoice_lines.append({
                     'name': line.property_id.name,
                     'quantity': remaining_qty,
                     'price_unit': line.rent,
-                    'invoice_line': line  # link
                 })
-
         if not invoice_lines:
             return
-
+        #draft invoice
         draft_invoice = accountmove.search([
             ('rental_id', '=', self.id),
             ('state', '=', 'draft')
         ])
-        # created_invoice_lines = []
+        new_invoice_lines = [(0, 0, {
+            'name': vals['name'],
+            'quantity': vals['quantity'],
+            'price_unit': vals['price_unit'],
+        }) for vals in invoice_lines]
         if draft_invoice:
-            existing_names = set(draft_invoice.invoice_line_ids.mapped('name'))
-            new_lines = []
-            for vals in invoice_lines:
-                if vals['name'] not in existing_names:
-                    line_vals = {
-                        'name': vals['name'],
-                        'quantity': vals['quantity'],
-                        'price_unit': vals['price_unit'],
-                    }
-                    new_lines.append((0, 0, line_vals))
-            if new_lines:
-                draft_invoice.write({'invoice_line_ids': new_lines})
+            draft_invoice.write({'invoice_line_ids': [(5, 0, 0)] + new_invoice_lines})
             invoice = draft_invoice
         else:
             # Create new invoice
-            new_invoice_lines = [
-                (0, 0, {
-                    'name': vals['name'],
-                    'quantity': vals['quantity'],
-                    'price_unit': vals['price_unit'],
-                })
-                for vals in invoice_lines
-            ]
             invoice = accountmove.create({
                 'move_type': 'out_invoice',
                 'partner_id': self.tenant_id.id,
@@ -121,12 +100,8 @@ class PropertyRental(models.Model):
                 'invoice_line_ids': new_invoice_lines,
                 'rental_id': self.id
             })
-        # link created invoice lines back to property lines
-        for vals in invoice_lines:
-            line = vals['invoice_line']
-            inv_line = invoice.invoice_line_ids.filtered(lambda l: l.name == vals['name'])
-            if inv_line:
-                line.invoice_line_ids |= inv_line
+        # Link invoice lines to rental lines
+        self.property_ids.link_invoice_lines(invoice)
         return {
             'type': 'ir.actions.act_window',
             'name': 'Invoice',
@@ -140,12 +115,16 @@ class PropertyRental(models.Model):
         """Confirm state"""
         if self.message_attachment_count >= 0:
             self.write({'status': 'confirm'})
+            template = self.env.ref('property.tenant_mail')
+            template.send_mail(self.id, force_send=True)
         else:
             raise ValidationError("At least 1 file must be attached")
 
     def action_closed(self):
         """closed state"""
         self.write({'status': 'closed'})
+        template = self.env.ref('property.tenant_mail')
+        template.send_mail(self.id, force_send=True)
 
     def action_returned(self):
         """returned state"""
@@ -154,3 +133,5 @@ class PropertyRental(models.Model):
     def action_expire(self):
         """expire state"""
         self.write({'status': 'expired'})
+        template = self.env.ref('property.tenant_mail')
+        template.send_mail(self.id, force_send=True)

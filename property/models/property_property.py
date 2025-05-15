@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """utf8"""
+from email.policy import default
+
 from odoo import models, fields
 
 
@@ -29,6 +31,7 @@ class PropertyProperty(models.Model):
     )
     property_count = fields.Integer(string="Rents", compute="_compute_property_count")
     facility_ids = fields.Many2many("property.facility", string="Facilities")
+    active = fields.Boolean(string="Active", default=True)
 
     def _compute_property_count(self):
         """smart button"""
