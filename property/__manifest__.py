@@ -9,7 +9,10 @@
         'views/property_rental_view.xml',
         'views/property_facility_view.xml',
         'views/account_move_view.xml',
-        'data/property_email_template.xml',
+        'views/res_partner_view.xml',
+        'data/email_template_data.xml',
+        'data/ir_cron.xml',
+        'data/late_payment_template.xml',
         'views/property_menu.xml'],
     'depends': ['base','mail', 'account', 'sale']
 }

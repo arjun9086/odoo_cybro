@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """utf8"""
-from email.policy import default
 
 from odoo import models, fields
 

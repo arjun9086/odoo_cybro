@@ -78,7 +78,7 @@ class PropertyRental(models.Model):
                 })
         if not invoice_lines:
             return
-        #draft invoice
+        # draft invoice
         draft_invoice = accountmove.search([
             ('rental_id', '=', self.id),
             ('state', '=', 'draft')
@@ -135,3 +135,22 @@ class PropertyRental(models.Model):
         self.write({'status': 'expired'})
         template = self.env.ref('property.tenant_mail')
         template.send_mail(self.id, force_send=True)
+
+    def action_change_state(self):
+        """change state"""
+        record = self.search([('end_date', '<', fields.Date.today()), ('status', '!=', 'expired')])
+        record.write({'status': 'expired'})
+
+    def late_payment_mail(self):
+        """late payment mail"""
+        expired_rentals = self.search([('status', '=', 'expired')])
+        template = self.env.ref('property.late_payment_mail')
+        for rental in expired_rentals:
+            invoices = self.env['account.move'].search([
+                ('rental_id', '=', rental.id),
+                ('state', '=', 'posted'),
+                ('payment_state', '!=', 'paid')
+            ])
+            if invoices and template:
+                template.send_mail(rental.id, force_send=True)
+

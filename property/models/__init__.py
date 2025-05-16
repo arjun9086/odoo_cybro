@@ -4,3 +4,4 @@ from . import property_rental
 from . import property_facility
 from . import account_move
 from . import property_line
+from . import res_partner
