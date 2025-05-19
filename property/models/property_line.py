@@ -24,5 +24,4 @@ class PropertyLine(models.Model):
     def link_invoice_lines(self, invoice):
         for line in self:
             matched_lines = invoice.invoice_line_ids.filtered(lambda l: l.name == line.property_id.name)
-            if matched_lines:
-                line.invoice_line_ids |= matched_lines
+            line.invoice_line_ids |= matched_lines

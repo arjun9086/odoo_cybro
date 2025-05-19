@@ -5,6 +5,8 @@
     'description': 'Property Management',
     'data': [
         'security/ir.model.access.csv',
+        'security/property_groups.xml',
+        'security/rental_groups.xml',
         'views/property_property_view.xml',
         'views/property_rental_view.xml',
         'views/property_facility_view.xml',

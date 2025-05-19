@@ -9,7 +9,7 @@ class PropertyRental(models.Model):
     """Rental or Lease Management"""
     _name = "property.rental"
     _description = "Rental or Lease Management"
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string="Sequence number", default=lambda self: 'New', readonly=True)
     type = fields.Selection(selection=[('rent', 'Rent'), ('lease', 'Lease')])
@@ -47,7 +47,6 @@ class PropertyRental(models.Model):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('property.rental')
-                # print('vals=', vals_list)
         return super(PropertyRental, self).create(vals_list)
 
     def action_get_invoice_record(self):
@@ -143,9 +142,9 @@ class PropertyRental(models.Model):
 
     def late_payment_mail(self):
         """late payment mail"""
-        expired_rentals = self.search([('status', '=', 'expired')])
+        expired_rental = self.search([('status', '=', 'expired')])
         template = self.env.ref('property.late_payment_mail')
-        for rental in expired_rentals:
+        for rental in expired_rental:
             invoices = self.env['account.move'].search([
                 ('rental_id', '=', rental.id),
                 ('state', '=', 'posted'),
@@ -153,4 +152,3 @@ class PropertyRental(models.Model):
             ])
             if invoices and template:
                 template.send_mail(rental.id, force_send=True)
-

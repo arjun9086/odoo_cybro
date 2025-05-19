@@ -1,6 +1,8 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_property_property,access_property_property,model_property_property,base.group_user,1,1,1,1
-access_property_rental,access_property_rental,model_property_rental,base.group_user,1,1,1,1
+access_property_property,access_property_property,model_property_property,property_group_manager,1,1,1,1
+access_property_property_user,access_property_property,model_property_property,property_user_manager,1,1,0,0
+access_property_rental,access_property_rental,model_property_rental,rental_manager,1,0,0,1
+access_property_rental_user,access_property_rental,model_property_rental,rental_user_manager,1,1,1,0
 access_property_facility,access_property_facility,model_property_facility,base.group_user,1,1,1,1
 access_account_move,access_account_move,model_account_move,base.group_user,1,1,1,1
 access_property_line,access_property_line,model_property_line,base.group_user,1,1,1,1

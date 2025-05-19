@@ -98,7 +98,7 @@
     </record>
     <!--    Action -->
     <record id="property_rental_action" model="ir.actions.act_window">
-        <field name="name">Rental</field>
+        <field name="name">Rental Contract</field>
         <field name="res_model">property.rental</field>
         <field name="view_mode">list,form,kanban</field>
     </record>
