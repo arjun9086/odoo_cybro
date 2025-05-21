@@ -18,8 +18,8 @@ class PropertyRental(models.Model):
     start_date = fields.Date(string="Period")
     end_date = fields.Date(string="End date")
     status = fields.Selection(
-        selection=[('draft', 'Draft'), ('confirm', 'Confirmed'), ('closed', 'Closed'), ('returned', 'Returned'),
-                   ('expired', 'Expired')],
+        selection=[('draft', 'Draft'), ('to_approve', 'To Approve'), ('confirm', 'Confirmed'),
+                   ('closed', 'Closed'), ('returned', 'Returned'), ('expired', 'Expired')],
         string='Status',
         default='draft',
         tracking=True)
@@ -112,10 +112,12 @@ class PropertyRental(models.Model):
 
     def action_confirm(self):
         """Confirm state"""
-        if self.message_attachment_count >= 0:
+        if self.message_attachment_count >= 0 and self.env.user.has_group('property.rental_manager'):
             self.write({'status': 'confirm'})
             template = self.env.ref('property.tenant_mail')
             template.send_mail(self.id, force_send=True)
+        elif self.env.user.has_group('property.rental_user_manager'):
+            self.write({'status': 'to_approve'})
         else:
             raise ValidationError("At least 1 file must be attached")
 
@@ -134,6 +136,10 @@ class PropertyRental(models.Model):
         self.write({'status': 'expired'})
         template = self.env.ref('property.tenant_mail')
         template.send_mail(self.id, force_send=True)
+
+    def action_cancel(self):
+        """cancel button"""
+        self.write({'status': 'draft'})
 
     def action_change_state(self):
         """change state"""

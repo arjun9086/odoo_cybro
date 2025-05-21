@@ -8,16 +8,25 @@
             <form>
                 <header>
                     <button name="action_create_invoice" type="object" string="Create Invoice" class="btn-primary"
-                            invisible="status=='draft'"/>
-                    <button name="action_confirm" type="object" string="Confirm" invisible="status=='confirm'"/>
-                    <button name="action_closed" type="object" string="Closed" invisible="status=='closed'"/>
-                    <button name="action_returned" type="object" string="Return" invisible="status=='returned'"/>
-                    <button name="action_expire" type="object" string="Expire" invisible="status=='expire'"/>
-                    <field name="status" widget="statusbar" options="{'clickable': True}"/>
+                            invisible="status!='confirm'" groups="property.rental_manager"/>
+                    <button name="action_confirm" type="object" string="Confirm" groups='property.rental_manager'
+                            invisible="status=='confirm'"/>
+                    <button name="action_confirm" type="object" string="Confirm" groups='property.rental_user_manager'
+                            invisible="status=='to_approve'"/>
+                    <button name="action_closed" type="object" string="Closed" invisible="status=='closed'"
+                            groups="property.rental_manager"/>
+                    <button name="action_returned" type="object" string="Return" invisible="status=='returned'"
+                            groups="property.rental_manager"/>
+                    <button name="action_expire" type="object" string="Expire" invisible="status=='expire'"
+                            groups="property.rental_manager"/>
+                    <button name="action_cancel" type="object" string="Cancel"/>
+                    <field name="status" widget="statusbar" options="{'clickable': True}"
+                           statusbar_visible="draft,confirm,closed,returned,expired,closed"/>
                 </header>
                 <sheet>
                     <div name="button_box" position="inside">
-                        <button class="oe_stat_button" type="object" icon="fa-book" name="action_get_invoice_record">
+                        <button class="oe_stat_button" type="object" icon="fa-book" name="action_get_invoice_record"
+                                groups="property.rental_manager">
                             <field name="rental_count" widget="statinfo"/>
                         </button>
                     </div>
@@ -28,19 +37,19 @@
                     </div>
                     <group>
                         <group>
-                            <field name="type"/>
-                            <field name="tenant_id"/>
-                            <field name="company_id"/>
+                            <field name="type" readonly="status != 'draft'"/>
+                            <field name="tenant_id" readonly="status != 'draft'"/>
+                            <field name="company_id" readonly="status != 'draft'"/>
                         </group>
                         <group>
                             <field name="start_date" widget="daterange" options="{'always_range':'true',
-                            'end_date_field':'end_date'}"/>
-                            <field name="remaining_days"/>
+                            'end_date_field':'end_date'}" readonly="status != 'draft'"/>
+                            <field name="remaining_days" readonly="status != 'draft'"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Properties">
-                            <field name="property_ids" readonly="status == 'confirm'">
+                            <field name="property_ids" readonly="status != 'draft'">
                                 <list editable="bottom">
                                     <field name="property_id"/>
                                     <field name="quantity_"/>
