@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<odoo>
-    <record id="user_company_rule" model="ir.rule">
-        <field name="name">property user company</field>
-        <field name="model_id" ref="model_property_rental"/>
-        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-    </record>
-</odoo>
