@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="report_wizard_view_form" model="ir.ui.view">
+            <field name="name">report.wizard.view.form</field>
+            <field name="model">report.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="property_id"/>
+                                <field name="owner_id"/>
+                                <field name="type"/>
+                            </group>
+                            <group>
+                                <field name="start_date" widget="daterange" options="{'always_range':'true',
+                            'end_date_field':'end_date'}"/>
+                                <field name="tenant_id"/>
+                            </group>
+                        </group>
+                        <footer>
+                            <button name="action_print_report" type="object" string="Print PDF" class="oe_highlight"/>
+                            <button special="cancel" string="Cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!--    Action -->
+        <record id="report_wizard_action" model="ir.actions.act_window">
+            <field name="name">Rent Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>
