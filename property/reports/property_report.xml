@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!--    Report Function in Expense -->
     <record id="action_rent_report" model="ir.actions.report">
         <field name="name">Rent Report</field>
         <field name="model">property.rental</field>

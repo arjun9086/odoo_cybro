@@ -17,4 +17,5 @@ class ReportWizard(models.TransientModel):
 
     def action_print_report(self):
         """to print report"""
+        
         return
