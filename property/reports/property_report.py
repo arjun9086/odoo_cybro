@@ -7,4 +7,4 @@ class PropertyReport(models.Model):
     _name = 'property.report'
     _description = 'property rental reports'
 
-    property_id = fields.Many2one('property.rental')
+    property_ids = fields.Many2many('property.line')

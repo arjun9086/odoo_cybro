@@ -18,7 +18,7 @@
         'data/late_payment_template.xml',
         'wizard/report_wizard_view.xml',
         'reports/property_report.xml',
-        'reports/property_report.xml',
+        'reports/property_report_templates.xml',
         'views/property_menu.xml'],
     'depends': ['base', 'mail', 'account', 'sale']
 }
