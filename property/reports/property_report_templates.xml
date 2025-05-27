@@ -2,58 +2,64 @@
 <odoo>
     <template id="report_rent_report_details">
         <t t-name="property.report_rent_report_details" t-data="report_data">
-            <t t-call="web.html_container">
-                <t t-foreach="docs" t-as="rental">
-                    <t t-call="web.external_layout">
-                        <div class="page">
-                            <h2>Rent/Lease Report</h2>
-                            <h4>Properties:</h4>
-                            <table class="table table-sm table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Property Name</th>
-                                        <th>Owner</th>
-                                        <th>Tenant</th>
-                                        <th>Rent Amount</th>
-                                        <th>Status</th>
-                                        <th>start date</th>
-                                        <th>end date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="report_data.get('rental_data', [])" t-as="line">
-                                        <tr>
-                                            <td>
-                                                <t t-esc="line['property_name']"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="line['owner_name']"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="line['tenant_name']"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="line['quantity']"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="line['rent_amount']"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="line['state']"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="line['start_date']"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="line['end_date']"/>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
+            <t t-call="web.external_layout">
+                <main class="page">
+                    <div class="page">
+                        <h2 style="text-align:left;">Rent/Lease Report</h2>
+                        <div class="row mb-4" id="informations">
+                            <strong>Start Date</strong>
                         </div>
-                    </t>
-                </t>
+                        <table class="table table-sm table-bordered" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>Rental ID</th>
+                                    <th>Property</th>
+                                    <th>Owner</th>
+                                    <th>Type</th>
+                                    <th>Tenant</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Rent Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="report_data.get('rental_data', [])" t-as="line">
+                                    <tr>
+                                        <td>
+                                            <t t-esc="line['rental_name']"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line['property_name']"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line['owner_name']"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line['type']"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line['tenant_name']"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line['start_date']"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line['end_date']"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line['rent_amount']"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line['status']"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+
             </t>
         </t>
     </template>
