@@ -9,7 +9,6 @@
         <record model="res.groups" id="property_group_manager">
             <field name="name">Property Manager Access</field>
             <field name="category_id" ref="property_module_management"/>
-            <field name="implied_ids" eval="[(6,0,[ref('property.property_group_manager')])]"/>
         </record>
         <record model="res.groups" id="property_user_manager">
             <field name="name">Property User Access</field>

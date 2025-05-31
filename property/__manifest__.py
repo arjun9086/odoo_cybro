@@ -20,5 +20,9 @@
         'reports/property_report.xml',
         'reports/property_report_templates.xml',
         'views/property_menu.xml'],
-    'depends': ['base', 'mail', 'account', 'sale']
+    'depends': ['base', 'mail', 'account', 'sale'],
+'assets': {
+        'web.assets_backend': [
+            'property/static/src/js/action_manager.js',],
+}
 }

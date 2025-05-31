@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import models
 
 
 class PropertyReport(models.Model):
@@ -7,4 +7,3 @@ class PropertyReport(models.Model):
     _name = 'property.report'
     _description = 'property rental reports'
 
-    property_ids = fields.Many2many('property.line')

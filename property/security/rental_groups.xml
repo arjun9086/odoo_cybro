@@ -15,7 +15,6 @@
         <record model="res.groups" id="rental_manager">
             <field name="name">Rental manager Access</field>
             <field name="category_id" ref="property_rental_management"/>
-            <field name="implied_ids" eval="[(6,0,[ref('property.rental_manager')])]"/>
         </record>
     </data>
 </odoo>

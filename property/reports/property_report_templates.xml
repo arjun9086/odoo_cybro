@@ -7,19 +7,48 @@
                     <div class="page">
                         <h2 style="text-align:left;">Rent/Lease Report</h2>
                         <div class="row mb-4" id="informations">
-                            <strong>Start Date</strong>
+                            <t t-set="filters" t-value="report_data.get('filters', {})"/>
+                            <div t-if="filters.get('property')" class="col" name="informations_reference">
+                                <strong>Property:</strong>
+                                <div t-esc="filters['property']"/>
+                            </div>
+                            <div t-if="filters.get('tenant')" class="col" name="informations_reference">
+                                <strong>Tenant:</strong>
+                                <div t-esc="filters['tenant']"/>
+                            </div>
+                            <div t-if="filters.get('owner')" class="col" name="informations_reference">
+                                <strong>Owner:</strong>
+                                <div t-esc="filters['owner']"/>
+                            </div>
+                            <div t-if="filters.get('type')" class="col" name="informations_reference">
+                                <strong>Type:</strong>
+                                <div t-esc="filters['type']"/>
+                            </div>
+                            <div t-if="filters.get('start_date')" class="col" name="informations_reference">
+                                <strong>From:</strong>
+                                <div t-esc="filters['start_date']"/>
+                            </div>
+                            <div t-if="filters.get('end_date')" class="col" name="informations_reference">
+                                <strong>To:</strong>
+                                <div t-esc="filters['end_date']"/>
+                            </div>
                         </div>
-                        <table class="table table-sm table-bordered" style="width:100%;">
-                            <thead>
+                        <p style="text-align:right">
+                            <strong>Printing Date:
+                                <t t-esc="time.strftime('%Y-%m-%d')"/>
+                            </strong>
+                        </p>
+                        <table class="o_has_total_table table o_main_table table-borderless" style="width:100%;">
+                            <thead style="display: table-row-group">
                                 <tr>
-                                    <th>Rental ID</th>
-                                    <th>Property</th>
-                                    <th>Owner</th>
-                                    <th>Type</th>
+                                    <th>Rental Order</th>
                                     <th>Tenant</th>
+                                    <th>Owner</th>
+                                    <th>Property</th>
+                                    <th>Type</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
-                                    <th>Rent Amount</th>
+                                    <th>Amount</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -30,16 +59,16 @@
                                             <t t-esc="line['rental_name']"/>
                                         </td>
                                         <td>
-                                            <t t-esc="line['property_name']"/>
+                                            <t t-esc="line['tenant_name']"/>
                                         </td>
                                         <td>
                                             <t t-esc="line['owner_name']"/>
                                         </td>
                                         <td>
-                                            <t t-esc="line['type']"/>
+                                            <t t-esc="line['property_name']"/>
                                         </td>
                                         <td>
-                                            <t t-esc="line['tenant_name']"/>
+                                            <t t-esc="line['type_label']"/>
                                         </td>
                                         <td>
                                             <t t-esc="line['start_date']"/>
@@ -51,7 +80,7 @@
                                             <t t-esc="line['rent_amount']"/>
                                         </td>
                                         <td>
-                                            <t t-esc="line['status']"/>
+                                            <t t-esc="line['status_label']"/>
                                         </td>
                                     </tr>
                                 </t>
@@ -59,7 +88,6 @@
                         </table>
                     </div>
                 </main>
-
             </t>
         </t>
     </template>

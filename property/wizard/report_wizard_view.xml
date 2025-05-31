@@ -21,6 +21,7 @@
                         </group>
                         <footer>
                             <button name="action_print_report" type="object" string="Print PDF" class="oe_highlight"/>
+                            <button name="action_print_excel" type="object" string="Print Excel" class="oe_highlight"/>
                             <button special="cancel" string="Cancel"/>
                         </footer>
                     </sheet>

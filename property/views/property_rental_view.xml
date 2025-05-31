@@ -10,9 +10,9 @@
                     <button name="action_create_invoice" type="object" string="Create Invoice" class="btn-primary"
                             invisible="status!='confirm'" groups="property.rental_manager"/>
                     <button name="action_confirm" type="object" string="Confirm" groups='property.rental_manager'
-                            invisible="status=='confirm'"/>
+                            invisible="status in ['confirm']"/>
                     <button name="action_confirm" type="object" string="Confirm" groups='property.rental_user_manager'
-                            invisible="status=='to_approve'"/>
+                            invisible="status in['confirm','to_approve']"/>
                     <button name="action_closed" type="object" string="Closed" invisible="status=='closed'"
                             groups="property.rental_manager"/>
                     <button name="action_returned" type="object" string="Return" invisible="status=='returned'"
