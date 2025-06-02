@@ -9,3 +9,4 @@ class ResPartner(models.Model):
     _description = 'Partner Invoice'
 
     property_ids = fields.One2many('property.property', 'owner_id', readonly=True)
+    name = fields.Char(string="Name")
