@@ -13,6 +13,7 @@
         'views/property_facility_view.xml',
         'views/account_move_view.xml',
         'views/res_partner_view.xml',
+        'views/property_website_view.xml',
         'data/email_template_data.xml',
         'data/ir_cron.xml',
         'data/late_payment_template.xml',

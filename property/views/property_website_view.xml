@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="property_details" name="Property website">
+        <t t-call="website.layout">
+            <div class="container">
+                <center>
+                    <h2>Property Details</h2>
+                </center>
+                <br/>
+                <div class="oe_product_cart_new row"
+                     style="overflow: hidden;">
+                    <t t-foreach="property"
+                       t-as="property">
+                        <div class="col-md-3 col-sm-3 col-xs-12"
+                             style="padding:6px 6px 6px 6px;">
+                            <form action="/shop/cart/update"
+                                  method="post"
+                                  class="card oe_product_cart"
+                                  data-publish="on">
+                                <br/>
+                                <center>
+<!--                                    <div style="width:100%; height:155px;overflow: hidden;">-->
+<!--                                        <img t-attf-src="/web/image?model=property.property&amp;field=image_1920&amp;&ndash;&gt;-->
+<!--                                           id=#{property_name.id}"-->
+<!--                                             class="img img-fluid"-->
+<!--                                             style="padding: 0px; margin: 0px; width:auto; height:100%;"/>-->
+<!--                                    </div>-->
+                                </center>
+                                <br/>
+                                <div class="card-body p-0 text-center o_wsale_product_information">
+                                    <div class="p-2 o_wsale_product_information_text">
+                                        <h5 class="o_wsale_products_item_title">
+                                            <t t-esc="property.name"/>
+                                        </h5>
+                                    </div>
+                                    <div class="o_wsale_product_btn"
+                                         data-oe-model="ir.ui.view"
+                                         data-oe-id="1561"
+                                         data-oe-field="arch"
+                                         data-oe-xpath="/t[1]/form[1]/div[2]/div[2]"/>
+                                </div>
+                            </form>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+    <record id="property_details_menu" model="website.menu">
+        <field name="name">Property</field>
+        <field name="url">/Property</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">90</field>
+    </record>
+</odoo>
