@@ -14,6 +14,7 @@
         'views/account_move_view.xml',
         'views/res_partner_view.xml',
         'views/property_website_view.xml',
+        'views/rental_website_view.xml',
         'data/email_template_data.xml',
         'data/ir_cron.xml',
         'data/late_payment_template.xml',
@@ -21,7 +22,7 @@
         'reports/property_report.xml',
         'reports/property_report_templates.xml',
         'views/property_menu.xml'],
-    'depends': ['base', 'mail', 'account', 'sale'],
+    'depends': ['base', 'mail', 'account', 'sale','website'],
 'assets': {
         'web.assets_backend': [
             'property/static/src/js/action_manager.js',],

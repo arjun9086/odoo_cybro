@@ -9,4 +9,4 @@ class PropertyDetails(http.Controller):
     def index(self):
         name = request.env['property.property'].sudo().search([])
         print(name)
-        return request.render('property.property_details', {'property': name})
+        return request.render('property.property_details_template', {'property': name})
