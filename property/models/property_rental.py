@@ -26,6 +26,7 @@ class PropertyRental(models.Model):
     remaining_days = fields.Float(string="Remaining days", compute='_compute_remaining_days', store=True)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company.id)
     rental_count = fields.Integer(string="Invoice", compute="_compute_rental_count")
+    rent = fields.Integer()
 
     @api.depends('end_date', 'start_date')
     def _compute_remaining_days(self):

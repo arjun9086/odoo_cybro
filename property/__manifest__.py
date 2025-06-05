@@ -25,6 +25,8 @@
     'depends': ['base', 'mail', 'account', 'sale','website'],
 'assets': {
         'web.assets_backend': [
-            'property/static/src/js/action_manager.js',],
+            'property/static/src/js/action_manager.js',
+            'property/static/src/js/action_website.js',
+        ],
 }
 }
