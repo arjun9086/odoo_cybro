@@ -1,20 +1,76 @@
 /** @odoo-module **/
 import publicWidget from "@web/legacy/js/public/public_widget";
+
 publicWidget.registry.Rentals = publicWidget.Widget.extend({
-    selector: "#wrap",
+    selector: "#rental_form_wrap",
     events: {
         'click .add_rental_line': '_onAddLine',
-        'click .remove_rental_line': '_onRemoveLine'
+        'click .remove_rental_line': '_onRemoveLine',
+        'change select[name^="property_id_"]': '_onPropertyChange',
+        'change #start_date, #end_date': '_onDateChange',
     },
     _onAddLine: function (ev) {
         ev.preventDefault();
-        const $template = $('.property_rental_template').first().clone();
-        $template.removeClass('property_rental_template d-none').addClass('property_order_line');
-        $template.find('select, input').val('');
-        $('#rental_lines_container').append($template);
+        const $last = $('.property_order_line').last();
+        console.log('add line')
+        const index = $('.property_order_line').length;
+        const $new = $last.clone();
+        $new.find('select[name^="property_id_"]').attr('name', 'property_id_' + index).val('');
+        $new.find('input[name^="quantity_"]').attr('name', 'quantity_' + index).val('');
+        $new.find('td:last').html('<button type="button" class="btn btn-danger remove_rental_line">Delete</button>');
+        $('#rental_lines_container').append($new);
+        this._onDateChange();
+
     },
     _onRemoveLine: function (ev) {
         ev.preventDefault();
-        $(ev.currentTarget).closest('tr.property_order_line').remove();
+        const $row = $(ev.currentTarget).closest('tr.property_order_line');
+        if ($('.property_order_line').length > 1) {
+            $row.remove();
+        }
     },
+    _onPropertyChange: function (ev) {
+         const $select = $(ev.currentTarget);
+        const propId = $select.val();
+        const $row = $select.closest('tr');
+
+        if (!propId) return;
+
+        $.get('/property/rent/' + propId).then(function (data) {
+            const rent = parseFloat(data.rent_amount || 0);
+            const qty = parseFloat($row.find('input[name^="quantity_"]').val() || 0);
+            $row.find('input[name^="rent_amount_"]').val(rent);
+            $row.find('input[name^="subtotal_"]').val((qty * rent).toFixed(2));
+        });
+    },
+ _onDateChange: function () {
+    const $start = $('#start_date');
+    const $end = $('#end_date');
+
+    const startVal = $start.val();
+    const endVal = $end.val();
+
+    // Skip if both dates not set
+    if (!startVal || !endVal) {
+        return;
+    }
+
+    const start = new Date(startVal);
+    const end = new Date(endVal);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
+        return;
+    }
+
+    const diffDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+
+    // Fill quantity and subtotal for each property line
+    $('.property_order_line').each(function () {
+        const $row = $(this);
+        $row.find('input[name^="quantity_"]').val(diffDays);
+        const rent = parseFloat($row.find('input[name^="rent_amount_"]').val() || 0);
+        $row.find('input[name^="subtotal"]').val((diffDays * rent).toFixed(2));
+    });
+}
+
 });

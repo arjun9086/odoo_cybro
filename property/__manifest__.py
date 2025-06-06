@@ -26,7 +26,9 @@
 'assets': {
         'web.assets_backend': [
             'property/static/src/js/action_manager.js',
-            'property/static/src/js/action_website.js',
         ],
+    'web.assets_frontend':[
+        'property/static/src/js/action_website.js',
+    ],
 }
 }

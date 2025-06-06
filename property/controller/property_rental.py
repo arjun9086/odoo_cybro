@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import http
 from odoo.http import request
+import json
 
 
 class PropertyRental(http.Controller):
@@ -25,22 +26,25 @@ class PropertyRental(http.Controller):
     @http.route(['/rental/submit'], type='http', auth="public", website=True, csrf=False)
     def rental_submit(self, **post):
         print('Form submitted')
-        # Extract all lines using array-style input names
-        property_ids = post.getlist('property_ids[]')
-        quantities = post.getlist('quantity[]')
-        rents = post.getlist('rent[]')
-
         property_lines = []
-        for prop_id, qty, rent in zip(property_ids, quantities, rents):
+        i = 0
+        while True:
+            prop_id = post.get(f'property_id_{i}')
+            print(prop_id)
+            qty = post.get(f'quantity_{i}')
+            print(qty)
+            if not prop_id:
+                break  # No more lines
             try:
                 property_lines.append((0, 0, {
                     'property_id': int(prop_id),
-                    'quantity_': float(qty or 1),
-                    'rent': float(rent or 0),
+                    # 'quantity_': float(qty or 1),
                 }))
             except Exception as e:
-                print(f"Skipping invalid line: {e}")
-        # Create the rental record
+                print(f"Skipping line {i}: {e}")
+            i += 1
+            print(property_lines)
+            print('work')
         request.env['property.rental'].sudo().create({
             'start_date': post.get('start_date'),
             'end_date': post.get('end_date'),
@@ -48,9 +52,25 @@ class PropertyRental(http.Controller):
             'tenant_id': int(post.get('tenant_id')),
             'property_ids': property_lines,
             'name': 'New',
-            'rent': float(post.get('rent') or 0),
         })
-
         print('Rental record created successfully')
         return request.redirect('/rentals')
+
+    @http.route(['/rental/<int:rental_id>/edit'], type='http', auth="public", website=True)
+    def rental_edit(self, rental_id):
+        rental = request.env['property.rental'].sudo().browse(rental_id)
+        tenants = request.env['res.partner'].sudo().search([])
+        properties = request.env['property.property'].sudo().search([])
+        # print(amount)
+        return request.render("property.property_rental_form", {
+            'rental': rental,
+            'tenants': tenants,
+            'properties': properties,
+        })
+
+    @http.route('/property/rent/<int:property_id>', type='http', auth='public', website=True)
+    def get_property_rent(self, property_id):
+        prop = request.env['property.property'].sudo().browse(property_id)
+        print('prop')
+        return http.Response(json.dumps({'rent_amount': prop.rent}), content_type='application/json')
 

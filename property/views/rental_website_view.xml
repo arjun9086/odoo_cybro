@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <template id="property_rental_template" name="Rental website">
         <t t-call="website.layout">
@@ -29,281 +29,162 @@
                                         <strong>Status:</strong>
                                         <t t-esc="rental.status"/>
                                     </p>
+                                    <a t-attf-href="/rental/{{ rental.id }}/edit" class="btn btn-sm btn-primary">View
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </t>
                 </div>
             </div>
-            <a t-attf-href="/web#id=#{rental.id}&amp;model=property.rental&amp;view_type=form" target="_blank"/>
         </t>
     </template>
-    <!--    form view website -->
+    <!--form -->
     <template id="property_rental_form" name="Website form rental">
         <t t-call="website.layout">
-            <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001"
-                     data-snippet="s_title" data-scroll-background-ratio="1">
-                <span class="s_parallax_bg oe_img_bg" style="background-image:
-                url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+            <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24"
+                     data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
+                <span class="s_parallax_bg oe_img_bg"
+                      style="background-image:url('/web/image/website.s_parallax_default_image');
+                      background-position: 50% 0;"/>
                 <div class="o_we_bg_filter bg-black-50"/>
                 <div class="container">
                     <h1>Rental Record</h1>
                 </div>
             </section>
             <br/>
-            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-            <div class="container">
+            <div class="container" id="rental_form_wrap">
                 <form action="/rental/submit" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="row">
-                        <div class="mb-3 col-lg-6" data-type="many2one">
+                        <div class="mb-3 col-lg-6">
+                            <label for="start_date">Start Date *</label>
+                            <input id="start_date" type="date" class="form-control" name="start_date"
+                                   required="required"
+                                   t-att-value="rental and rental.start_date or ''"/>
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            <label for="end_date">End Date *</label>
+                            <input type="date" name="end_date" id="end_date" class="form-control" required="required"
+                                   t-att-value="rental and rental.end_date or ''"/>
+                        </div>
+                        <div class="mb-3 col-lg-6">
                             <label for="tenant_id">Tenant *</label>
                             <select name="tenant_id" id="tenant_id" class="form-control" required="required">
                                 <t t-foreach="tenants" t-as="tenant">
-                                    <option t-att-value="tenant.id">
+                                    <option t-att-value="tenant.id"
+                                            t-att-selected="rental and rental.tenant_id.id == tenant.id">
                                         <t t-esc="tenant.name"/>
                                     </option>
                                 </t>
                             </select>
                         </div>
-                        <div class="mb-3 col-lg-6" data-type="date">
-                            <label for="start_date">Start Date *</label>
-                            <input id="start_date" type="date" class="form-control" name="start_date"
-                                   required="required"/>
-                        </div>
-                        <div class="mb-3 col-lg-6 " data-type="date">
-                            <label for="end_date">End Date *</label>
-                            <input id="end_date" type="date" class="form-control" name="end_date"
-                                   required="required"/>
-                        </div>
-                        <div class="mb-3 col-lg-6 " data-type="selection">
+                        <div class="mb-3 col-lg-6">
                             <label for="type">Type *</label>
                             <select name="type" id="type" class="form-control" required="required">
-                                <option value="rent">Rent</option>
-                                <option value="lease">Lease</option>
+                                <option value="rent" t-att-selected="rental and rental.type == 'rent'">Rent</option>
+                                <option value="lease" t-att-selected="rental and rental.type == 'lease'">Lease</option>
                             </select>
                         </div>
-                        <div class="mb-3 col-lg-6 " data-type="integer">
-                            <label for="rent">Amount *</label>
-                            <input id="rent" type="number" class="form-control" name="rent"/>
-                        </div>
-                        <!--                        <div class="mb-3 col-12 " data-type="text">-->
-                        <!--                            <label for="property">Properties *</label>-->
-                        <!--                            <select name="property_ids" class="form-control" id="property" multiple="multiple">-->
-                        <!--                                <t t-foreach="properties" t-as="prop">-->
-                        <!--                                    <option t-att-value="prop.id">-->
-                        <!--                                        <t t-esc="prop.name"/>-->
-                        <!--                                    </option>-->
-                        <!--                                </t>-->
-                        <!--                            </select>-->
-                        <!--                        </div>-->
+                        <!-- PROPERTY LINE TABLE -->
                         <div class="form-group">
-                            <div class='row ml-1' style="width:99%;">
-                                <div class="form-group col-12 show_total_project">
-                                    <div class="row s_col_no_resize s_col_no_bgcolor">
-                                        <table class="table table-bordered mt-3" id="rental_lines_table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Property*</th>
-                                                    <th>Quantity*</th>
-                                                    <th>Amount*</th>
-                                                    <th width="5%"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="rental_lines_container">
-                                                <tr class="property_order_line">
-                                                    <td>
-                                                        <select name="property_ids[]" class="form-control property_id">
-                                                            <t t-foreach="properties" t-as="prop">
-                                                                <option t-att-value="prop.id">
-                                                                    <t t-esc="prop.name"/>
-                                                                </option>
-                                                            </t>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" name="quantity[]"
-                                                               class="form-control quantity" value="1"/>
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" name="rent[]" class="form-control rent"/>
-                                                    </td>
-                                                    <td>
-                                                        <button type="button"
-                                                                class="btn fa fa-trash-o remove_rental_line"
-                                                                style="color:red;"></button>
-                                                    </td>
-                                                </tr>
-                                                <!-- Template row -->
-                                                <tr class="property_rental_template d-none">
-                                                    <td>
-                                                        <select name="property_ids[]" class="form-control property_id">
-                                                            <t t-foreach="properties" t-as="prop">
-                                                                <option t-att-value="prop.id">
-                                                                    <t t-esc="prop.name"/>
-                                                                </option>
-                                                            </t>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" name="quantity[]"
-                                                               class="form-control quantity"/>
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" name="rent[]" class="form-control rent"/>
-                                                    </td>
-                                                    <td>
-                                                        <button type="button"
-                                                                class="btn fa fa-trash-o remove_rental_line"
-                                                                style="color:red;"></button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                        <!--                                        <table class="table table-bordered mt-3" id="property_ids">-->
-                                        <!--                                            <thead>-->
-                                        <!--                                                <tr>-->
-                                        <!--                                                    <td>-->
-                                        <!--                                                        <strong>-->
-                                        <!--                                                            Property*-->
-                                        <!--                                                        </strong>-->
-                                        <!--                                                    </td>-->
-                                        <!--                                                    <td>-->
-                                        <!--                                                        <strong>Quantity*-->
-                                        <!--                                                        </strong>-->
-                                        <!--                                                    </td>-->
-                                        <!--                                                    <td>-->
-                                        <!--                                                        <strong>Amount *-->
-                                        <!--                                                        </strong>-->
-                                        <!--                                                    </td>-->
-                                        <!--                                                    <td width="5%"/>-->
-                                        <!--                                                </tr>-->
-                                        <!--                                            </thead>-->
-                                        <!--                                            <div class="collapse">-->
-                                        <!--                                                <tbody id="rental_lines_container">-->
-                                        <!--                                                    <tr class="property_order_line">-->
-                                        <!--                                                        <td>-->
-                                        <!--                                                            <select id="property_ids"-->
-                                        <!--                                                                    name="property_ids"-->
-                                        <!--                                                                    class="form-control s_website_form_input">-->
-                                        <!--                                                                <t t-foreach="properties" t-as="prop">-->
-                                        <!--                                                                    <option t-att-value="prop.id">-->
-                                        <!--                                                                        <t t-esc="prop.name"/>-->
-                                        <!--                                                                    </option>-->
-                                        <!--                                                                </t>-->
-                                        <!--                                                            </select>-->
-                                        <!--                                                        </td>-->
-                                        <!--                                                        <td>-->
-                                        <!--                                                            <div class="d-flex">-->
-                                        <!--                                                                <span class="mt-2"-->
-                                        <!--                                                                      style="margin-right: 0.5rem !important;"/>-->
-                                        <!--                                                                <input placeholder="quantity"-->
-                                        <!--                                                                       type="number"-->
-                                        <!--                                                                       class="form-control total_cost"-->
-                                        <!--                                                                       name="quantity"-->
-                                        <!--                                                                       id="quantity"-->
-                                        <!--                                                                       value="1"/>-->
-                                        <!--                                                            </div>-->
-                                        <!--                                                        </td>-->
-                                        <!--                                                        <td>-->
-                                        <!--                                                            <div class="d-flex">-->
-                                        <!--                                                                <span class="mt-2"-->
-                                        <!--                                                                      style="margin-right: 0.5rem !important;"/>-->
-                                        <!--                                                                <select id="operation_type"-->
-                                        <!--                                                                        name="operation"-->
-                                        <!--                                                                        class="form-control-->
-                                        <!--                                                                          s_website_form_input operation">-->
-                                        <!--                                                                    <option></option>-->
-                                        <!--                                                                </select>-->
-                                        <!--                                                            </div>-->
-                                        <!--                                                        </td>-->
-                                        <!--                                                        <td>-->
-                                        <!--                                                            <button class="btn fa fa-trash-o remove_rental_line"-->
-                                        <!--                                                                    style="color: red;-->
-                                        <!--                                                                              padding: 0px;-->
-                                        <!--                                                                              margin-left: -6px;-->
-                                        <!--                                                                              margin-top: 6px;-->
-                                        <!--                                                                              margin-bottom:15px;"-->
-                                        <!--                                                                    name="delete"-->
-                                        <!--                                                                    aria-label="Delete row 1"/>-->
-                                        <!--                                                        </td>-->
-                                        <!--                                                    </tr>-->
-                                        <!--                                                    <tr class="property_rental_template d-none">-->
-                                        <!--                                                        <td>-->
-                                        <!--                                                            <select id="property_ids"-->
-                                        <!--                                                                    name="property_ids"-->
-                                        <!--                                                                    class="form-control">-->
-                                        <!--                                                                <t t-foreach="properties" t-as="prop">-->
-                                        <!--                                                                    <option t-att-value="prop.id">-->
-                                        <!--                                                                        <t t-esc="prop.name"/>-->
-                                        <!--                                                                    </option>-->
-                                        <!--                                                                </t>-->
-                                        <!--                                                            </select>-->
-                                        <!--                                                        </td>-->
-                                        <!--                                                        <td>-->
-                                        <!--                                                            <div class="d-flex">-->
-                                        <!--                                                                <span class="mt-2"-->
-                                        <!--                                                                      style="margin-right: 0.5rem !important;"/>-->
-                                        <!--                                                                <input placeholder="quantity"-->
-                                        <!--                                                                       type="number"-->
-                                        <!--                                                                       class="form-control total_cost"-->
-                                        <!--                                                                       name="quantity"-->
-                                        <!--                                                                       id="quantity"/>-->
-                                        <!--                                                            </div>-->
-                                        <!--                                                        </td>-->
-                                        <!--                                                        <td>-->
-                                        <!--                                                            <div class="d-flex">-->
-                                        <!--                                                                <span class="mt-2"-->
-                                        <!--                                                                      style="margin-right: 0.5rem !important;"/>-->
-                                        <!--                                                                <select id="rent"-->
-                                        <!--                                                                        name="rent"-->
-                                        <!--                                                                        class="form-control operation">-->
-                                        <!--                                                                    <option></option>-->
-                                        <!--                                                                </select>-->
-                                        <!--                                                            </div>-->
-                                        <!--                                                        </td>-->
-                                        <!--                                                        <td>-->
-                                        <!--                                                            <button type="button"-->
-                                        <!--                                                                    class="btn fa fa-trash-o remove_rental_line"-->
-                                        <!--                                                                    style="color: red;-->
-                                        <!--                                                                           padding: 0px;-->
-                                        <!--                                                                           margin-left: -6px;-->
-                                        <!--                                                                           margin-top: 6px;-->
-                                        <!--                                                                           margin-bottom:15px;"-->
-                                        <!--                                                                    name="delete"-->
-                                        <!--                                                                    aria-label="Delete row 1"/>-->
-                                        <!--                                                        </td>-->
-                                        <!--                                                    </tr>-->
-                                        <!--                                                </tbody>-->
-                                        <!--                                            </div>-->
-                                        <!--                                        </table>-->
-                                    </div>
-                                    <div>
-                                        <button type="button" class="btn btn-outline-primary add_rental_line"
-                                                style="float: right;
-                                                margin-right: -15px;">
-                                            <i class="fa fa-plus add_rental_line"/>
-                                        </button>
-                                        <br/>
-                                    </div>
-                                </div>
-                            </div>
+                            <label class="mt-3">Property Lines</label>
+                            <table class="table table-bordered mt-2" id="rental_lines_table">
+                                <thead>
+                                    <tr>
+                                        <th>Property*</th>
+                                        <th>Quantity*</th>
+                                        <th>Rent Amount</th>
+                                        <th>Total Amount*</th>
+                                        <th width="10%"/>
+                                    </tr>
+                                </thead>
+                                <tbody id="rental_lines_container">
+                                    <t t-if="rental">
+                                        <t t-set="i" t-value="0"/>
+                                        <t t-foreach="rental.property_ids" t-as="line">
+                                            <tr class="property_order_line">
+                                                <td>
+                                                    <select t-att-name="'property_id_' + str(i)" class="form-control"
+                                                            required="1">
+                                                        <t t-foreach="properties" t-as="prop">
+                                                            <option t-att-value="prop.id"
+                                                                    t-att-selected="line.property_id.id == prop.id">
+                                                                <t t-esc="prop.name"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="number" t-att-name="'quantity_' + str(i)"
+                                                           class="form-control"
+                                                           t-att-value="line.quantity_"/>
+                                                </td>
+                                                <td>
+                                                    <input type="number" t-att-name="'rent_amount_' + str(i)"
+                                                           t-att-value="line.rent" class="form-control"/>
+                                                </td>
+                                                <td>
+                                                    <input name='amount' type="number" t-att-name="'subtotal' + str(i)"
+                                                           class="form-control"
+                                                           t-att-value="line.subtotal"/>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger remove_rental_line">
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <t t-set="i" t-value="i + 1"/>
+                                        </t>
+                                    </t>
+                                    <t t-if="not rental">
+                                        <tr class="property_order_line">
+                                            <td>
+                                                <select name="property_id_" class="form-control" required="1">
+                                                    <option value=" " disabled="" selected="">Select a property</option>
+                                                    <t t-foreach="properties" t-as="prop">
+                                                        <option t-att-value="prop.id">
+                                                            <t t-esc="prop.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="quantity_" class="form-control"/>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="rent_amount_" class="form-control"
+                                                       required="1"/>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="subtotal_" class="form-control"/>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger remove_rental_line">Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-outline-primary add_rental_line float-right">
+                                <i class="fa fa-plus"/>
+                                Add Line
+                            </button>
                         </div>
                     </div>
-                    <div class="s_website_form_submit s_website_form_no_submit_label text-end"
-                         data-name="submit">
+                    <div class="text-end mt-4">
                         <button type="submit" class="btn btn-success">Submit</button>
-                        <span id="s_website_form_result"/>
                     </div>
                 </form>
             </div>
         </t>
     </template>
-    <!--    Menu -->
     <record id="rental_website_menu" model="website.menu">
         <field name="name">Rentals</field>
         <field name="url">/rentals</field>
         <field name="parent_id" ref="website.main_menu"/>
-        <field name="sequence" type="int">91</field>
+        <field name="sequence" eval="91"/>
     </record>
 </odoo>
