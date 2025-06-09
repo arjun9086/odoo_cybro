@@ -1,40 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="property_rental_template" name="Rental website">
-        <t t-call="website.layout">
-            <div class="container">
-                <h2>Rental Records</h2>
-                <a href="/rental/new" class="btn btn-primary mb-3">Create New</a>
-                <div class="row">
-                    <t t-foreach="rentals" t-as="rental">
-                        <div class="col-md-4 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <t t-esc="rental.name"/>
-                                    </h5>
-                                    <p>
-                                        <strong>Tenant:</strong>
-                                        <t t-esc="rental.tenant_id.name"/>
-                                    </p>
-                                    <p>
-                                        <strong>Start:</strong>
-                                        <t t-esc="rental.start_date"/>
-                                    </p>
-                                    <p>
-                                        <strong>End:</strong>
-                                        <t t-esc="rental.end_date"/>
-                                    </p>
-                                    <p>
-                                        <strong>Status:</strong>
-                                        <t t-esc="rental.status"/>
-                                    </p>
-                                    <a t-attf-href="/rental/{{ rental.id }}/edit" class="btn btn-sm btn-primary">View
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
+    <template id="portal_my_rental_orders" name="Portal My Rental Orders">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Rental Orders</t>
+            <div class="container o_portal">
+                <div class="o_portal_wrap">
+                    <div class="o_portal_my_doc">
+                        <!--                        <nav aria-label="breadcrumb" class="mb-3">-->
+                        <!--                            <ol class="breadcrumb mb">-->
+                        <!--                                <li class="breadcrumb-item">-->
+                        <!--                                    <a href="/my/home">My Account</a>-->
+                        <!--                                </li>-->
+                        <!--                                <li class="breadcrumb-item active" aria-current="page">
+                        Rental Orders</li>-->
+                        <!--                            </ol>-->
+                        <!--                        </nav>-->
+                        <h2 class="mb-4">Rental Orders</h2>
+                        <table class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rental Order #</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="rental_orders" t-as="rental">
+                                    <tr>
+                                        <td>
+                                            <a t-att-href="'/my/rental_orders/%d' % rental.id">
+                                                <t t-esc="rental.name"/>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <t t-esc="rental.start_date"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="rental.end_date"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="rental.type.title()"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="rental.status.title()"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </t>
@@ -62,13 +78,10 @@
                             <input id="start_date" type="date" class="form-control" name="start_date"
                                    required="required"
                                    t-att-value="rental and rental.start_date or ''"/>
-                        </div>
-                        <div class="mb-3 col-lg-6">
                             <label for="end_date">End Date *</label>
-                            <input type="date" name="end_date" id="end_date" class="form-control" required="required"
+                            <input type="date" name="end_date" id="end_date" class="form-control"
+                                   required="required"
                                    t-att-value="rental and rental.end_date or ''"/>
-                        </div>
-                        <div class="mb-3 col-lg-6">
                             <label for="tenant_id">Tenant *</label>
                             <select name="tenant_id" id="tenant_id" class="form-control" required="required">
                                 <t t-foreach="tenants" t-as="tenant">
@@ -78,15 +91,14 @@
                                     </option>
                                 </t>
                             </select>
-                        </div>
-                        <div class="mb-3 col-lg-6">
                             <label for="type">Type *</label>
                             <select name="type" id="type" class="form-control" required="required">
                                 <option value="rent" t-att-selected="rental and rental.type == 'rent'">Rent</option>
-                                <option value="lease" t-att-selected="rental and rental.type == 'lease'">Lease</option>
+                                <option value="lease" t-att-selected="rental and rental.type == 'lease'">Lease
+                                </option>
                             </select>
                         </div>
-                        <!-- PROPERTY LINE TABLE -->
+                        <!-- property line table -->
                         <div class="form-group">
                             <label class="mt-3">Property Lines</label>
                             <table class="table table-bordered mt-2" id="rental_lines_table">
@@ -110,7 +122,7 @@
                                                         <t t-foreach="properties" t-as="prop">
                                                             <option t-att-value="prop.id"
                                                                     t-att-selected="line.property_id.id == prop.id">
-                                                                <t t-esc="prop.name"/>
+                                                                <t t-esc="prop.name" required="1"/>
                                                             </option>
                                                         </t>
                                                     </select>
@@ -141,24 +153,26 @@
                                     <t t-if="not rental">
                                         <tr class="property_order_line">
                                             <td>
-                                                <select name="property_id_" class="form-control" required="1">
-                                                    <option value=" " disabled="" selected="">Select a property</option>
+                                                <select name="property_id_0" class="form-control" required="required">
+                                                    <option value=" " hidden="" selected="">Select a property</option>
                                                     <t t-foreach="properties" t-as="prop">
-                                                        <option t-att-value="prop.id">
+                                                        <option t-att-value="prop.id" required="required">
                                                             <t t-esc="prop.name"/>
                                                         </option>
                                                     </t>
                                                 </select>
                                             </td>
                                             <td>
-                                                <input type="number" name="quantity_" class="form-control"/>
+                                                <input type="number" name="quantity_" class="form-control"
+                                                       readonly="True"/>
                                             </td>
                                             <td>
                                                 <input type="number" name="rent_amount_" class="form-control"
-                                                       required="1"/>
+                                                       required="required" readonly="True"/>
                                             </td>
                                             <td>
-                                                <input type="number" name="subtotal_" class="form-control"/>
+                                                <input type="number" name="subtotal_" class="form-control"
+                                                       readonly="True"/>
                                             </td>
                                             <td>
                                                 <button type="button" class="btn btn-danger remove_rental_line">Delete
@@ -168,6 +182,11 @@
                                     </t>
                                 </tbody>
                             </table>
+                            <t t-if="error_message">
+                                <div class="alert alert-danger" role="alert">
+                                    <t t-esc="error_message"/>
+                                </div>
+                            </t>
                             <button type="button" class="btn btn-outline-primary add_rental_line float-right">
                                 <i class="fa fa-plus"/>
                                 Add Line
@@ -181,9 +200,129 @@
             </div>
         </t>
     </template>
+    <template id="portal_rental_order_detail" name="Rental Order Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Rental #
+                <t t-esc="rental.name"/>
+            </t>
+            <div class="container">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="/my/home">My Account</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="/my/rental_orders">Rental Orders</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <t t-esc="rental.name"/>
+                        </li>
+                    </ol>
+                </nav>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <t t-if="rental.status in ['expired','closed']">
+                                <h3 style="text-align:right" class="text-danger">
+                                    <t t-esc="rental.status.title()"/>
+                                </h3>
+                            </t>
+                            <t t-if="rental.status=='confirm'">
+                                <h3 style="text-align:right" class="text-success">
+                                    <t t-esc="rental.status.title()"/>
+                                </h3>
+                            </t>
+                            <t t-if="rental.status=='draft'">
+                                <h3 style="text-align:right" class="text-secondary">
+                                    <t t-esc="rental.status.title()"/>
+                                </h3>
+                            </t>
+                        </div>
+                        <h4>Rental Order#
+                            <t t-esc="rental.name"/>
+                        </h4>
+                        <p>
+                            <strong>Tenant:</strong>
+                            <t t-esc="rental.tenant_id.name"/>
+                        </p>
+                        <p>
+                            <strong>Type:</strong>
+                            <t t-esc="rental.type.title()"/>
+                        </p>
+                        <p>
+                            <strong>Start Date:</strong>
+                            <t t-esc="rental.start_date"/>
+                        </p>
+                        <p>
+                            <strong>End Date:</strong>
+                            <t t-esc="rental.end_date"/>
+                        </p>
+
+                        <h5 class="mt-4">Property Lines</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Quantity</th>
+                                    <th>Rent</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="rental.property_ids" t-as="line">
+                                    <tr>
+                                        <td>
+                                            <t t-esc="line.property_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.quantity_"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.rent"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.subtotal"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    <!--    Thank you -->
+    <record id="property.rental_order_thanks" model="website.page">
+        <field name="name">Thanks</field>
+        <field name="type">qweb</field>
+        <field name="url">/rental-thank-you</field>
+        <field name="website_indexed" eval="False"/>
+        <field name="is_published">True</field>
+        <field name="arch" type="xml">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_text_block pt40 pb40 o_colored_level ">
+                        <div class="container s_allow_columns">
+                            <div class="row">
+                                <div class="col-lg-6 offset-lg-1 text-center">
+                                    <div class="d-inline-block mx-auto p-4">
+                                        <i class="fa fa-paper-plane fa-2x mb-3 rounded-circle text-bg-success"
+                                           role="presentation"/>
+                                        <h1 class="fw-bolder">Thank You!</h1>
+                                        <a href="/">Go to Homepage</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </field>
+    </record>
     <record id="rental_website_menu" model="website.menu">
         <field name="name">Rentals</field>
-        <field name="url">/rentals</field>
+        <field name="url">rental/new</field>
         <field name="parent_id" ref="website.main_menu"/>
         <field name="sequence" eval="91"/>
     </record>

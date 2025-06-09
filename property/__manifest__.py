@@ -15,6 +15,7 @@
         'views/res_partner_view.xml',
         'views/property_website_view.xml',
         'views/rental_website_view.xml',
+        'views/portal_website_view.xml',
         'data/email_template_data.xml',
         'data/ir_cron.xml',
         'data/late_payment_template.xml',

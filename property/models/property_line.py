@@ -14,6 +14,7 @@ class PropertyLine(models.Model):
     quantity_ = fields.Float(related='property_inverse_id.remaining_days', string="Quantity")
     subtotal = fields.Integer(string="Subtotal", compute='_compute_subtotal')
     invoice_line_ids = fields.Many2many("account.move.line", string='Linked field')
+    lease_amount = fields.Integer(related="property_id.legal_amount",string="lease")
 
     def _compute_subtotal(self):
         """subtotal"""
