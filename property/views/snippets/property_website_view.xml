@@ -20,9 +20,9 @@
     <!--    Next property details page-->
     <template id="property_information_template" name="Property Details">
         <t t-call="website.layout">
-                <t t-set="title">property #
-                    <t t-esc="name.name"/>
-                </t>
+            <t t-set="title">property #
+                <t t-esc="name.name"/>
+            </t>
         </t>
     </template>
 </odoo>
