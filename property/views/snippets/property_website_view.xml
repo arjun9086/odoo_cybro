@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="property_details_template" name="Property List">
+        <!--        <t t-call="website.layout">-->
+        <section class="categories_section">
+            <div class="container">
+                <div class="alert alert-info">
+                    <h4>Property List</h4>
+                </div>
+            </div>
+        </section>
+    </template>
+    <!-- Snippet Registration -->
+    <template id="property_details_snippet" inherit_id="website.snippets" name="Property Details Snippet">
+        <xpath expr="//snippets[@id='snippet_groups']" position="inside">
+            <t t-snippet="property.property_details_template"
+               t-thumbnail="property/static/src/img/s_picture.svg"/>
+        </xpath>
+    </template>
+    <!--    Next property details page-->
+    <template id="property_information_template" name="Property Details">
+        <t t-call="website.layout">
+                <t t-set="title">property #
+                    <t t-esc="name.name"/>
+                </t>
+        </t>
+    </template>
+</odoo>

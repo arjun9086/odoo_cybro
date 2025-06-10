@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--Product Category tab content template-->
+<templates xml:space="preserve">
+<t t-name="property.category_data">
+    <section class="categories_section">
+        <div class="container" onclick="this.querySelector('a').click(); return true;">
+            <h3 class="section_heading">Properties</h3>
+            <div id="property_card_container" class="row">
+                <t t-foreach="properties" t-as="property" t-key="property.id">
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img t-att-src="'/web/image/property.property/' + property.id + '/image'"
+                                 class="card-img-top" style="object-fit: cover; height: 160px;"/>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    <t t-esc="property.name"/>
+                                </h5>
+                                <a t-att-href="/property_details/{ property.id }"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </section>
+</t>
+</templates>
+
+

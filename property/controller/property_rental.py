@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Website creation and displaying of rental records"""
+import json
 from odoo import http
 from odoo.http import request
-import json
 
 
 class PropertyRental(http.Controller):
@@ -33,7 +33,7 @@ class PropertyRental(http.Controller):
         print('Form submitted')
         property_lines = []
         i = 0
-        has_property = False  # Track if at least one valid property is added
+        has_property = False
         while True:
             prop_id = post.get(f'property_id_{i}')
             if not prop_id:
@@ -48,7 +48,6 @@ class PropertyRental(http.Controller):
                     print(f"Skipping line {i}: {e}")
             i += 1
         if not has_property:
-            # Re-render the form with an error message
             tenants = request.env['res.partner'].sudo().search([])
             properties = request.env['property.property'].sudo().search([])
             return request.render("property.property_rental_form", {

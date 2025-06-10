@@ -74,14 +74,6 @@
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="row">
                         <div class="mb-3 col-lg-6">
-                            <label for="start_date">Start Date *</label>
-                            <input id="start_date" type="date" class="form-control" name="start_date"
-                                   required="required"
-                                   t-att-value="rental and rental.start_date or ''"/>
-                            <label for="end_date">End Date *</label>
-                            <input type="date" name="end_date" id="end_date" class="form-control"
-                                   required="required"
-                                   t-att-value="rental and rental.end_date or ''"/>
                             <label for="tenant_id">Tenant *</label>
                             <select name="tenant_id" id="tenant_id" class="form-control" required="required">
                                 <t t-foreach="tenants" t-as="tenant">
@@ -97,6 +89,14 @@
                                 <option value="lease" t-att-selected="rental and rental.type == 'lease'">Lease
                                 </option>
                             </select>
+                            <label for="start_date">Start Date *</label>
+                            <input id="start_date" type="date" class="form-control" name="start_date"
+                                   required="required"
+                                   t-att-value="rental and rental.start_date or ''"/>
+                            <label for="end_date">End Date *</label>
+                            <input type="date" name="end_date" id="end_date" class="form-control"
+                                   required="required"
+                                   t-att-value="rental and rental.end_date or ''"/>
                         </div>
                         <!-- property line table -->
                         <div class="form-group">
