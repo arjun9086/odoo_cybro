@@ -1,30 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--Product Category tab content template-->
 <templates xml:space="preserve">
 <t t-name="property.category_data">
     <section class="categories_section">
-        <div class="container" onclick="this.querySelector('a').click(); return true;">
+        <div class="container">
             <h3 class="section_heading">Properties</h3>
-            <div id="property_card_container" class="row">
-                <t t-foreach="properties" t-as="property" t-key="property.id">
-                    <div class="col-md-4 mb-4">
-                        <a t-attf-href="/property_details/{{ property.id }}">
-                        <div class="card">
-                            <img t-att-src="'/web/image/property.property/' + property.id + '/image'"
-                                 class="card-img-top" style="object-fit: cover; height: 160px;"/>
-                            <div class="card-body text-center">
-                                <h5 class="card-title">
-                                    <t t-esc="property.name"/>
-                                </h5>
+            <div id="property_carousel" class="container carousel slide" data-bs-ride="carousel"
+                 data-bs-interval="2000">
+                <div class="carousel-outer" role="listbox">
+                    <t t-foreach="chunks" t-as="chunk" t-key="chunk">
+                        <div t-attf-class="carousel-item #{chunk.is_active ? 'active' : ''}">
+                            <div class="row">
+                                <t t-foreach="chunk.items" t-as="property" t-key="property.id">
+                                    <div class="col-md-3">
+                                        <a t-attf-href="/property_details/{{ property.id }}">
+                                            <div class="card">
+                                                <img t-att-src=
+                                                             "'/web/image/property.property/' + property.id + '/image'"
+                                                     class="card-img-top"
+                                                     style="object-fit: cover; height: 160px;"/>
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title">
+                                                        <t t-esc="property.name"/>
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </t>
                             </div>
                         </div>
-                        </a>
-                    </div>
-                </t>
+                    </t>
+                </div>
+                <a class="carousel-control-prev" href="#property_carousel" role="button" data-bs-slide="prev">
+                    <span class="fa fa-chevron-circle-left fa-2x"/>
+                    <span class="visually-hidden">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#property_carousel" role="button" data-bs-slide="next">
+                    <span class="fa fa-chevron-circle-right fa-2x"/>
+                    <span class="visually-hidden">Next</span>
+                </a>
             </div>
         </div>
     </section>
 </t>
 </templates>
-
-

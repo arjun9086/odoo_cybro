@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <template id="property_details_template" name="Property List">
-        <!--        <t t-call="website.layout">-->
         <section class="categories_section">
             <div class="container">
                 <div class="alert alert-info">
@@ -20,9 +19,70 @@
     <!--    Next property details page-->
     <template id="property_information_template" name="Property Details">
         <t t-call="website.layout">
-            <t t-set="title">property #
-                <t t-esc="name.name"/>
+            <t t-set="title">Property
+                <t t-esc="property.name"/>
             </t>
+            <section class="container mt-5">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img t-att-src="'/web/image/property.property/' + str(property.id) + '/image'"
+                             class="img-fluid rounded shadow"/>
+                    </div>
+                    <div class="col-md-6">
+                        <h2>
+                            <t t-esc="property.name"/>
+                        </h2>
+                        <p>
+                            <strong style="float: left; width: 50px;">Location:</strong>
+                            <span style="display: block; margin-left: 80px;">
+                                <t t-esc="property.street1"/>
+                                <br/>
+                                <t t-esc="property.street2"/>
+                                <br/>
+                                <t t-foreach="property.state_id" t-as="state">
+                                    <t t-esc="state.name"/>
+                                </t>
+                                <br/>
+                                <t t-foreach="property.country_id" t-as="country">
+                                    <t t-esc="country.name"/>
+                                </t>
+                            </span>
+                        </p>
+                        <p>
+                            <strong>Rent Price:</strong>
+                            ₹
+                            <t t-esc="property.rent"/>
+                        </p>
+                        <p>
+                            <strong>Lease Price:</strong>
+                            ₹
+                            <t t-esc="property.legal_amount"/>
+                        </p>
+                        <p>
+                            <strong>Owner:</strong>
+                            <t t-foreach="property.owner_id" t-as="owner">
+                                <t t-esc="owner.name"/>
+                            </t>
+                        </p>
+                        <p>
+                            <strong>Built Date:</strong>
+                            <t t-esc="property.built_date"/>
+                        </p>
+                        <p>
+                            <strong>Facilities:</strong>
+                            <t t-foreach="property.facility_ids" t-as="facility">
+                                <t t-esc="facility.name"/>,
+                            </t>
+                        </p>
+                        <p>
+                            <strong>Description:</strong>
+                        </p>
+                        <p>
+                            <t t-esc="property.description"/>
+                        </p>
+                    </div>
+                </div>
+            </section>
         </t>
     </template>
 </odoo>

@@ -19,7 +19,7 @@ class PropertyProperty(models.Model):
     description = fields.Html()
     owner_id = fields.Many2one('res.partner', string='Owner')
     can_be_sold = fields.Boolean()
-    legal_amount = fields.Integer()
+    legal_amount = fields.Integer(string='Lease')
     image = fields.Binary()
     rent = fields.Integer()
     status = fields.Selection(
