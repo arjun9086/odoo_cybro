@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_inherit_view" model="ir.ui.view">
+        <field name="name">res.config.settings.inherit.view</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='sale_product_catalog_settings']" position="inside">
+                <setting>
+                    <div class="content-group">
+                        <div class="row mt16">
+                            <strong>Bill of material</strong>
+                            <label class="o_light_label col-lg-3" string="Select the product for BOM"
+                                   for="bom_product_ids"/>
+                        </div>
+                        <div class="row">
+                            <field name="bom_product_ids" widget="many2many_tags" string="Product"/>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
