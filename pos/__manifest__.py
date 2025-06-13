@@ -9,6 +9,7 @@
     'assets': {
         'point_of_sale.assets': [
             'pos/static/src/xml/pos_product_rating.xml',
+            'pos/static/src/xml/pos_store.js',
         ],
     },
     'depends': ['sale', 'point_of_sale', 'product'],
