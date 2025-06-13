@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+   <t t-name="custom_pos_receipt.ProductCard" t-inherit="point_of_sale.ProductCard" t-inherit-mode="extension">
+       <xpath expr="//div[hasclass('product-name')]" position="after">
+           <span>Rating: <t t-esc="pos.db.product_by_id[props.productId].rating"/></span>
+       </xpath>
+   </t>
+</templates>
+<!--<odoo>-->
+<!--    <template id="ProductItemWithRating" inherit_id="point_of_sale.ProductItem">-->
+<!--        <xpath expr="//div[contains(@class, 'product-name')]" position="after">-->
+<!--            <t t-if="props.product.rating">-->
+<!--                <div class="product-rating" t-attf-style="font-size: 14px; color: gold;">-->
+<!--                    <t t-esc="'★' * int(props.product.rating)"/>-->
+<!--                </div>-->
+<!--            </t>-->
+<!--        </xpath>-->
+<!--    </template>-->
+<!--</odoo>-->
