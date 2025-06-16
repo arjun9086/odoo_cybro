@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_inherit_view" model="ir.ui.view">
+        <field name="name">res.config.settings.inherit.view</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@title='Sales']" position="after">
+                <setting>
+                    <div class="content-group">
+                        <div class="row mt16">
+                            <strong>Discount Limit</strong>
+                            <label class="o_light_label col-lg-3" string="Select the product for BOM"
+                                   for="discount_limit_id"/>
+                        </div>
+                        <div class="row">
+                            <field name="discount_limit_id" string="Discount"/>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

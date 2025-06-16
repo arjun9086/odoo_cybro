@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+   <t t-name="pos_store.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+       <xpath expr="//ul[hasclass('info-list')]" position="inside">
+           <li>
+           <div t-if="line.rating">
+               <span class="badge text-bg-warning">
+                    <span>Rating: <span t-out="line.rating"/>
+                        <span class="fa fa-star text-black"/></span>
+               </span>
+           </div>
+           </li>
+       </xpath>
+   </t>
+</templates>
