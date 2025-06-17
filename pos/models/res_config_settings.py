@@ -15,19 +15,46 @@ class ResConfigSettings(models.TransientModel):
     def set_values(self):
         super().set_values()
         config = self.env['ir.config_parameter'].sudo()
+
+        # Save the boolean flag
         config.set_param('pos_discount_limit_enabled', self.is_discount_limit)
+
+        # Save selected POS categories as comma-separated string
+        category_ids = ','.join(str(cat.id) for cat in self.pos_category_ids)
+        config.set_param('pos_discount.category_ids', category_ids)
 
     @api.model
     def get_values(self):
         res = super().get_values()
         config = self.env['ir.config_parameter'].sudo()
+
+        # Read saved values
         discount = config.get_param('pos_discount.discount', default='0')
         category_ids_str = config.get_param('pos_discount.category_ids', default='')
         category_ids = [int(x) for x in category_ids_str.split(',') if x]
+
         res.update({
-            'is_discount_limit': config.get_param('pos_discount_limit_enabled', default=False),
+            'is_discount_limit': config.get_param('pos_discount_limit_enabled', default=False) == 'True',
             'discount': int(discount),
             'pos_category_ids': [(6, 0, category_ids)],
         })
-        print(res)
         return res
+    # def set_values(self):
+    #     super().set_values()
+    #     config = self.env['ir.config_parameter'].sudo()
+    #     config.set_param('pos_discount_limit_enabled', self.is_discount_limit)
+    #
+    # @api.model
+    # def get_values(self):
+    #     res = super().get_values()
+    #     config = self.env['ir.config_parameter'].sudo()
+    #     discount = config.get_param('pos_discount.discount', default='0')
+    #     category_ids_str = config.get_param('pos_discount.category_ids', default='')
+    #     category_ids = [int(x) for x in category_ids_str.split(',') if x]
+    #     res.update({
+    #         'is_discount_limit': config.get_param('pos_discount_limit_enabled', default=False),
+    #         'discount': int(discount),
+    #         'pos_category_ids': [(6, 0, category_ids)],
+    #     })
+    #     print(res)
+    #     return res

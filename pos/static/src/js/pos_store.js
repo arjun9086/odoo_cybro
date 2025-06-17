@@ -39,34 +39,25 @@ patch(PosOrderline.prototype, {
             rating: this.get_product().rating || "",
         };
     },
-        set_discount(discount) {
-        const parsed_discount =
-            typeof discount === "number"
-                ? discount
-                : isNaN(parseFloat(discount))
-                ? 0
-                : parseFloat("" + discount);
+     set_discount(discount) {
+        const parsedDiscount = typeof discount === "number" ? discount : parseFloat(discount || "0");
 
-        const disc = Math.min(Math.max(parsed_discount || 0, 0), 100);
-        this.discount = disc;
+        const product = this.get_product();
+        const category = product.pos_categ_id?.[0] ? this.pos.db.category_by_id[product.pos_categ_id[0]] : null;
+        const maxAllowed = category?.discount ?? 100;
+
+        if (parsedDiscount > maxAllowed) {
+            this.pos.env.services.notification.add(
+                _t(`Max discount allowed for category '${category?.name}' is ${maxAllowed}%`),
+                { type: 'danger' }
+            );
+            return;
+        }
+
+        // Safe to apply discount
+        this.discount = Math.min(Math.max(parsedDiscount, 0), 100);
         this.order_id.recomputeOrderData();
         this.setDirty();
-//        const product = this.get_product();
-//        const pos = this.pos;
-//
-//        const categoryId = product.pos_categ_id && product.pos_categ_id[0];  // category id of product
-//        const isLimited = pos.discount_limit_enabled;
-//        const isInCategory = pos.discount_limit_categories?.includes(categoryId);
-//
-//        if (isLimited && isInCategory && discount > pos.discount_limit_value) {
-//            this.pos.env.services.notification.add(
-//                _t(`Maximum allowed discount for this category is ${pos.discount_limit_value}%`),
-//                { type: 'danger' }
-//            );
-//            return;
-//        }
-
-//        super.set_discount(...arguments);
     },
 
 //    set_discount(discount) {
