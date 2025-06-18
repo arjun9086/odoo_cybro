@@ -9,16 +9,10 @@
                 <setting>
                     <field name="is_discount_limit"/>
                     <div class="content-group" invisible="not is_discount_limit">
-                        <div class="row mt16">
-                            <label class="o_light_label col-lg-3" string="Set the discount limit"
-                                   for="discount"/>
-                            <field name="discount"/>
-                        </div>
-                        <br/>
+                        <label class="o_light_label col-lg-3" string="Set the discount limit for session"
+                               for="discount"/>
                         <div class="row">
-                            <label class="o_light_label col-lg-3" string="Set the category"
-                                   for="discount"/>
-                            <field name="pos_category_ids" widget="many2many_tags" string="Pos category"/>
+                            <field name="discount"/>
                         </div>
                     </div>
                 </setting>

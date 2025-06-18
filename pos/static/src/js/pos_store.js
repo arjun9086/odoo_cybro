@@ -4,17 +4,30 @@ import { PosStore } from "@point_of_sale/app/store/pos_store";
 import { Orderline } from "@point_of_sale/app/generic_components/orderline/orderline";
 import {PosOrderline} from "@point_of_sale/app/models/pos_order_line";
 import { _t } from "@web/core/l10n/translation";
+import { parseFloat } from "@web/views/fields/parsers";
+//import { ErrorPopup } from "@point_of_sale/app/errors";
 
-//patch(PosStore.prototype, {
-//    async _processData(loadedData) {
-//        await super._processData(...arguments);
-//          const posConfig = loadedData.pos_config || {};
-//        this.discount_limit_enabled = loadedData.pos_config.use_discount_limit;
-//        console.log(discount_limit_enabled)
-//        this.discount_limit_value = loadedData.pos_config.discount_limit;
-//        this.discount_limit_categories = loadedData.pos_config.category_ids;  // list of ids
-//    },
-//});
+patch(PosStore.prototype, {
+    async _processData(loadedData) {
+        await super._processData(...arguments);
+
+       const isDiscountLimitEnabled = await this.rpc({
+            model: "ir.config_parameter",
+            method: "get_param",
+            args: ["pos_discount_limit.is_discount_limit"],
+        });
+
+        const discountLimit = await this.rpc({
+            model: "ir.config_parameter",
+            method: "get_param",
+            args: ["pos_discount_limit.discount"],
+        });
+        this.is_discount_limit_enabled = isDiscountLimitEnabled === "True";
+        this.discount_limit = parseFloat(discountLimit || "0");
+
+        console.log("Discount limit loaded:", this.discount_limit);
+    },
+});
 
 patch(Orderline, {
     props: {
@@ -24,6 +37,9 @@ patch(Orderline, {
             shape: {
                 ...Orderline.props.line.shape,
                 rating: { type: [String,Boolean], optional: true },
+                discount:{ type: [String,Boolean] ,optional: true},
+                is_discount_limit_enabled:{type:[Boolean],optional:true}
+
             },
         },
     },
@@ -39,44 +55,30 @@ patch(PosOrderline.prototype, {
             rating: this.get_product().rating || "",
         };
     },
-     set_discount(discount) {
-        const parsedDiscount = typeof discount === "number" ? discount : parseFloat(discount || "0");
+    async set_discount(discount) {
+        var parsed_discount =
+            typeof discount === "number" ?
+            discount :
+            isNaN(parseFloat(discount)) ?
+            0 :
+            parseFloat("" + discount);
+        var disc = Math.min(Math.max(parsed_discount || 0, 0), 100);
+        var DiscountLimit=this.discount;
+        console.log(this.discount)
+        if (disc<DiscountLimit) {
+            console.log('Working');
+//            await this.env.services.popup.add(alert, {
+//                title: _t("Exceed Discount Limit!"),
+//                body: _t("Sorry, Discount is not allowed. Maximum discount for this Product is %s %", DiscountLimit),
 
-        const product = this.get_product();
-        const category = product.pos_categ_id?.[0] ? this.pos.db.category_by_id[product.pos_categ_id[0]] : null;
-        const maxAllowed = category?.discount ?? 100;
-
-        if (parsedDiscount > maxAllowed) {
-            this.pos.env.services.notification.add(
-                _t(`Max discount allowed for category '${category?.name}' is ${maxAllowed}%`),
-                { type: 'danger' }
-            );
-            return;
+            this.discount = 0;
+            this.discountStr = "0";
+        } else {
+            this.discount = disc;
+            this.discountStr = "" + disc;
         }
-
-        // Safe to apply discount
-        this.discount = Math.min(Math.max(parsedDiscount, 0), 100);
-        this.order_id.recomputeOrderData();
-        this.setDirty();
     },
 
-//    set_discount(discount) {
-//        const product = this.get_product();
-//        const pos = this.pos;
-//        if (pos.discount_limit_enabled) {
-//            const productCategoryId = product.pos_categ_id?.[0] || null;
-//            if (productCategoryId && pos.discount_limit_categories.includes(productCategoryId)) {
-//                if (discount > pos.discount_limit_value) {
-//                    this.pos.env.services.notification.add(
-//                        _t(`Maximum allowed discount for this category is ${pos.discount_limit_value}%`),
-//                        { type: 'danger' }
-//                    );
-//                    return;
-//                }
-//            }
-//        }
-//        super.set_discount(...arguments);
-//    },
 });
 
 
