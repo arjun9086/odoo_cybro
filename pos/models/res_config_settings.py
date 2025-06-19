@@ -10,7 +10,7 @@ class ResConfigSettings(models.TransientModel):
     _description = 'Pos module settings'
 
     is_discount_limit = fields.Boolean(string='Session Discount limit')
-    discount = fields.Integer('Limit')
+    discount = fields.Float('Limit')
 
     def set_values(self):
         super().set_values()
@@ -21,11 +21,13 @@ class ResConfigSettings(models.TransientModel):
     @api.model
     def get_values(self):
         res = super().get_values()
+        session = self.env['pos.session'].sudo().search([])
         config = self.env['ir.config_parameter'].sudo()
         is_limit = config.get_param('pos_discount_limit.is_discount_limit', default='False')
         discount_limit = config.get_param('pos_discount_limit.discount', default='0')
+        session.discount_limit = discount_limit
         res.update({
             'is_discount_limit': is_limit == 'True',
-            'discount': int(discount_limit),
+            'discount': float(discount_limit),
         })
         return res

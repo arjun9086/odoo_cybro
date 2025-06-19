@@ -1,12 +1,16 @@
 from odoo import models, fields
 
-class PosCategory(models.Model):
+
+class PosSession(models.Model):
     _inherit = ['pos.session']
 
-    def load_pos_data_fields(self, config_id):
-        print('discount')
-        fields = super().load_pos_data_fields(config_id)
-        # if 'discount' not in fields:
-        fields.append('discount')
+    discount_limit = fields.Float('Discount limit')
+
+    # print(discount_limit)
+
+    def _load_pos_data_fields(self, config_id):
+        fields = super()._load_pos_data_fields(config_id)
+        fields.append('discount_limit')
         print(fields)
         return fields
+
