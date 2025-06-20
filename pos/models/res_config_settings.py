@@ -9,7 +9,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = ['res.config.settings']
     _description = 'Pos module settings'
 
-    is_discount_limit = fields.Boolean(string='Session Discount limit')
+    is_discount_limit = fields.Boolean(string='Discount limit')
     discount = fields.Float('Limit')
 
     def set_values(self):

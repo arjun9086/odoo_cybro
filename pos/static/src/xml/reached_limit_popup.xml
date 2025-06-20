@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="pos.ReachedLimitPopup">
+        <Dialog>
+            <t t-set-slot="header">
+                <h4 class="modal-title">Reached Limit</h4>
+            </t>
+            <div class="alert alert-warning" role="alert">
+                You have reached the Discount Limit!
+            </div>
+            <t t-set-slot="footer">
+                <div class="modal-footer-left d-flex gap-2">
+                    <div class="modal-footer-left d-flex gap-2">
+                        <button class="button highlight btn btn btn-primary" t-on-click="confirm">Confirm</button>
+                        <button class="button btn btn btn-secondary" t-on-click="props.close">Close</button>
+                    </div>
+                </div>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>

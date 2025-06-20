@@ -2,97 +2,99 @@
 import { patch } from "@web/core/utils/patch";
 import { PosStore } from "@point_of_sale/app/store/pos_store";
 import { Orderline } from "@point_of_sale/app/generic_components/orderline/orderline";
-import {PosOrderline} from "@point_of_sale/app/models/pos_order_line";
+import { PosOrderline } from "@point_of_sale/app/models/pos_order_line";
 import { _t } from "@web/core/l10n/translation";
 import { parseFloat } from "@web/views/fields/parsers";
-//import { ErrorPopup } from "@point_of_sale/app/errors/popups/error_popup";
+import { useListener } from "@web/core/utils/hooks";
+import { ReachedLimitPopup } from "@pos/js/reached_limit_popup";
+import { WarningDialog } from "@web/core/errors/error_dialogs";
+import { useService } from "@web/core/utils/hooks";
+
+let discount_limit=0
+let remaining_discount_limit=0
 
 patch(PosStore.prototype, {
-    async setup() {
-        await super.setup(...arguments);
-        const sessionDiscountLimit = this.pos.session.discount_limit || 0;
+     async setup() {
+     await super.setup(...arguments);
+     // Get the current POS session
+     const currentSession = this.models['pos.session']?.getAll()?.[0] || {};
+     discount_limit = currentSession.discount_limit || 0;
+     remaining_discount_limit = discount_limit;
+     console.log("Session discount limit from backend:",discount_limit)
 
-        console.log("Session discount limit from backend:", sessionDiscountLimit);
-
-        this.discount_limit = sessionDiscountLimit;
-        this.is_discount_limit_enabled = sessionDiscountLimit > 0;
-        this.remaining_discount_limit = sessionDiscountLimit;
-    },
-
-    deductFromDiscountLimit(percentUsed) {
-        this.remaining_discount_limit -= percentUsed;
-    },
-});
+     },
+//     getTotalAppliedDiscount() {
+//        let total = 0;
+//        const order = this.get_order();
+//        if (!order) return total;
+//        for (const line of order.get_orderlines()) {
+//            if (line.discount) {
+//                total += parseFloat(line.discount);
+//            }
+//        }
+//        return total;
+//     },
+//     hasRemainingDiscount(discount) {
+//        const totalUsed = this.getTotalAppliedDiscount();
+//        const projected = totalUsed + discountToApply;
+//        console.log(`Total used: ${totalUsed}, Trying to apply: ${discountToApply}, Projected: ${projected},
+//        Limit: ${discount_limit}`);
+//        return projected <= discount_limit;
+//       },
+//     deductFromDiscountLimit(percentUsed) {
+//        remaining_discount_limit = Math.max(0, remaining_discount_limit - percentUsed);
+//        },
+    });
 
 patch(Orderline, {
-    props: {
-        ...Orderline.props,
-        line: {
-            ...Orderline.props.line,
-            shape: {
-                ...Orderline.props.line.shape,
-                rating: { type: [String,Boolean], optional: true },
-                discount:{ type: [String,Boolean] ,optional: true},
-//                is_discount_limit_enabled:{type:[Boolean],optional:true}
-            },
+        setup(){
+        super.setup();
+        this.dialogService = useService("dialog");
         },
-    },
-});
+         props: {
+            ...Orderline.props,
+         line: {
+            ...Orderline.props.line,
+         shape: {
+            ...Orderline.props.line.shape,
+                rating: { type: [String, Boolean], optional: true },
+                 discount: { type: [String, Boolean], optional: true },
+             },
+            },
+           },
+        });
+
 patch(PosOrderline.prototype, {
-    setup() {
-//        limit_discount=this.models['pos.session'].getAll().map((limit)=>({
-//        discount_limit:limit.discount_limit}));
-//        console.log(limit_discount)
-        return super.setup(...arguments);
-    },
-    getDisplayData() {
-        return {
-            ...super.getDisplayData(),
-            rating: this.get_product().rating || "",
+     setup() {
+     console.log("PosOrderline setup - discount_limit:",discount_limit);
+     },
+//},
+     getDisplayData() {
+     return {
+     ...super.getDisplayData(),
+     rating: this.get_product().rating || "",
+     discount: this.discountStr || "0",
         };
-    },
-    async set_discount(discount) {
-    // Safely parse the discount input
-    var parsed_discount =
-        typeof discount === "number" ? discount :
-        isNaN(parseFloat(discount)) ? 0 :
-        parseFloat("" + discount);
-    var disc = Math.min(Math.max(parsed_discount || 0, 0), 100);
-    //  Get the actual discount limit from POS session settings
-//    const pos = this.order?.pos;
-    var DiscountLimit = this.discount_limit || 0;
-    console.log(this.discount_limit)
-//    var isLimitEnabled = this.order?.pos?.posStore?.is_discount_limit_enabled;
-    // Debugging
-    console.log("Trying to apply:", disc);
-    console.log("Session discount limit is:", DiscountLimit);
-    if (disc > DiscountLimit) {
-        alert('Reached Discount Limit! Cannot apply more than ' + DiscountLimit + '%');
+     },
+   async set_discount(discount) {
+     const parsedDiscount = typeof discount === "number" ? discount :
+        isNaN(parseFloat(discount)) ? 0 : parseFloat(discount);
+     const disc = Math.min(Math.max(parsedDiscount, 0), 100);
+    if (disc > discount_limit) {
+        this.dialogService.add(WarningDialog, {
+            title: _t("Warning: Reached Limit"),
+            message: _t("Warning the discount limit has been reached")
+            });
+//        this.pos('discount_limit:exceeded', {});
+//        await this.services.popup.add(ReachedLimitPopup,{});
+        alert(`Reached Discount Limit`)
         this.discount = 0;
         this.discountStr = "0";
-    } else {
-        this.discount = disc;
-        this.discountStr = "" + disc;
+        return;
     }
-}
-
-//        if (posStore.is_discount_limit_enabled) {
-//            if (!posStore.hasRemainingDiscount(parsedDiscount)) {
-//                alert(`You cannot give more than ${posStore.remaining_discount_limit}% discount remaining in this session.`);
-//                this.discount = 0;
-//                this.discountStr = "0";
-//                return;
-//            }
-//
-//            // Accept and deduct from remaining limit
-//            posStore.deductFromDiscountLimit(parsedDiscount);
-//        }
-//
-//        this.discount = parsedDiscount;
-//        this.discountStr = discountStr;
-//    },
-
-
+    discount_limit-=disc
+    // Valid discount, apply it
+    this.discount = disc;
+    this.discountStr = "" + disc;
+   },
 });
-
-

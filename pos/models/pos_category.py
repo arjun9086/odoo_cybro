@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from odoo import models, fields
 
 
@@ -6,7 +7,6 @@ class PosSession(models.Model):
 
     discount_limit = fields.Float('Discount limit')
 
-    # print(discount_limit)
 
     def _load_pos_data_fields(self, config_id):
         fields = super()._load_pos_data_fields(config_id)
