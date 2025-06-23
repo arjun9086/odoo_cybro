@@ -11,7 +11,6 @@ export class ReachedLimitPopup extends Component {
     setup() {};
 
     confirm() {
-//        this.props.getPayload([...this.state.selectedTours]);
         this.props.close();
         }
     }

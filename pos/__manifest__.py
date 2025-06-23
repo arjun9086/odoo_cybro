@@ -16,6 +16,6 @@
             'pos/static/src/js/reached_limit_popup.js',
         ],
     },
-    'depends': [ 'point_of_sale', 'product'],
+    'depends': ['point_of_sale', 'product'],
     'installable': 'True'
 }

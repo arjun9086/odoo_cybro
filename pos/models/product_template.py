@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""product template model"""
 from odoo import models, fields
 
 
