@@ -10,35 +10,53 @@ import { ReachedLimitPopup } from "@pos/js/reached_limit_popup";
 import { WarningDialog } from "@web/core/errors/error_dialogs";
 import { useService } from "@web/core/utils/hooks";
 import { PosOrder } from "@point_of_sale/app/models/pos_order";
+import { PosPayment } from "@point_of_sale/app/models/pos_payment";
 
 let discount_limit=0;
 let remaining_discount_limit=0;
-let session_id=null;
 let dialogTimeout;
+let session_id=null;
 
 patch(PosStore.prototype, {
      async setup() {
      await super.setup(...arguments);
-     const currentSession = this.models['pos.session'].getAll()?.[0] || {};
+     const currentSession = this.models['pos.session'].getAll()?.[0]||{};
      discount_limit = currentSession.discount_limit || 0;
      session_id=currentSession.name;
-     remaining_discount_limit=discount_limit
-     console.log("Session discount limit from backend:",discount_limit)
+     remaining_discount_limit=discount_limit;
+     console.log("Session discount limit from backend:",discount_limit);
      },
-     deductSessionDiscount(amount) {
-        remaining_discount_limit = Math.max(0, remaining_discount_limit - amount);
-        console.log(amount)
-        console.log("[POS] Deducted", amount, "% → Remaining:", remaining_discount_limit);
+    async pay(){
+    const currentOrder = this.get_order();
+    const orderlines=currentOrder.get_orderlines();
+        const totalDiscount = orderlines.reduce((sum, line) => {
+            const discount = line.discount || 0;
+            return sum + (discount);
+        }, 0);
+        console.log('totaldiscount',totalDiscount)
+        if (totalDiscount > remaining_discount_limit) {
+             window.dispatchEvent(new CustomEvent("discount_limit_exceeded", {}));
+            return;
+        }
+//        if(currentOrder.canPay()){
+//        return remaining_discount_limit=discount_limit;
+//        }
+
+        console.log('remaining',remaining_discount_limit)
+        currentOrder._pending_discount = totalDiscount;
+        await super.pay(...arguments);
+        if (this.payment_status=='done')
+        {
+        remaining_discount_limit -= totalDiscount;
+        }
     },
 });
-patch(PosOrder.prototype, {
-    async finalize() {
-        const totalUsed = this.get_orderlines().reduce((sum, line) => {
-            const d = parseFloat(line.get_discount());
-            return sum + (isNaN(d) ? 0 : d);
-        }, 0);
-        this.pos.deductSessionDiscount(totalUsed);
-        await super.finalize();
+patch(PosPayment.prototype,{
+    async is_done(){
+    if (this.get_payment_status() === "done")
+        {
+        remaining_discount_limit -= totalDiscount;
+        }
     },
 });
 patch(Orderline, {
@@ -52,8 +70,7 @@ patch(Orderline, {
          shape: {
             ...Orderline.props.line.shape,
                 rating: { type: [String, Boolean], optional: true },
-                 discount: { type: [String, Boolean], optional: true },
-             },
+              },
             },
            },
         });
@@ -80,71 +97,11 @@ patch(Orderline.prototype, {
       },
 });
 patch(PosOrderline.prototype, {
-     setup() {
-     console.log("PosOrderline setup - discount_limit:",discount_limit);
-     },
-       getRemainingSessionDiscount() {
-        return remaining_discount_limit;
-    },
      getDisplayData() {
      return {
-     ...super.getDisplayData(),
-     rating: this.get_product().rating || "",
-     discount: this.discountStr || "0",
+        ...super.getDisplayData(),
+         rating: this.get_product().rating || "",
         };
      },
-    async set_discount(discount) {
-    const parsedDiscount = typeof discount === "number"
-        ? discount
-        : isNaN(parseFloat(discount))
-        ? 0
-        : parseFloat(discount);
-
-    const disc = Math.min(Math.max(parsedDiscount, 0), 100);
-
-    // Get all other orderlines from the current order (excluding this one)
-    const order = this.order;
-    const orderlines = order ? order.get_orderlines() : [];
-    console.log('orderlines',orderlines)
-    const otherDiscounts = orderlines.reduce((sum, line) => {
-        if (line !== this) {
-            const d = parseFloat(line.get_discount());
-            return sum + (isNaN(d) ? 0 : d);
-        }
-        return sum;
-    }, 0);
-
-    const remaining = discount_limit - otherDiscounts;
-
-    console.log("Total other discounts:", otherDiscounts);
-    console.log("Remaining limit:", remaining);
-    console.log("Requested:", disc);
-
-    if (disc > remaining) {
-        window.dispatchEvent(new CustomEvent("discount_limit_exceeded", {}));
-        this.discount = 0;
-        this.discountStr = "0";
-        return;
-    }
-
-    this.discount = disc;
-    this.discountStr = "" + disc;
-},
-
-//   async set_discount(discount) {
-//     const parsedDiscount = typeof discount === "number" ? discount :
-//     isNaN(parseFloat(discount)) ? 0 : parseFloat(discount);
-//     const disc = Math.min(Math.max(parsedDiscount, 0), 100);
-//     const remaining = this.getRemainingSessionDiscount();
-//     console.log(remaining)
-//    if (disc > remaining) {
-//          window.dispatchEvent(new CustomEvent("discount_limit_exceeded", {}));
-//          this.discount = 0;
-////        this.discountStr = "0";
-//        return;
-//    }
-//    remaining_discount_limit = Math.max(0,remaining_discount_limit - disc);
-//    this.discount = disc;
-//    this.discountStr = "" + disc;
-//   },
 });
+
