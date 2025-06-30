@@ -8,13 +8,14 @@
         <field name="module_id" ref="base.module_razorpay_payment"/>
         <field name="payment_method_ids"
                eval="[Command.set([
+                         ref('razorpay_payment.payment_method_new_razorpay_new'),
                          ref('payment.payment_method_card'),
                          ref('payment.payment_method_netbanking'),
                      ])]"/>
     </record>
 <!--    <record id="account_payment_method_razorpay_payment" model="account.payment.method">-->
 <!--        <field name="name">RazorPay</field>-->
-<!--        <field name="code">razorpay</field>-->
+<!--        <field name="code">new_razorpay</field>-->
 <!--        <field name="payment_type">inbound</field>-->
 <!--    </record>-->
 </odoo>
