@@ -7,9 +7,8 @@
         <field name="arch" type="xml">
             <group name="provider_credentials" position="inside">
                 <group name="razorpay_credentials" invisible="code != 'new_razorpay'">
-                    <field name="razorpay_key_id" required="1"/>
-                    <field name="razorpay_key_secret" required="1" password="True"/>
-                    <field name="razorpay_webhook_secret" password="True"/>
+                    <field name="razorpay_new_key_id" required="1"/>
+                    <field name="razorpay_new_key_secret" required="1" password="True"/>
                 </group>
             </group>
         </field>

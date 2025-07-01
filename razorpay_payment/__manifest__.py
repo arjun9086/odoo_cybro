@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 {
     'name': 'RazorPay Payment',
     'description': 'Razorpay Payment Provider',
@@ -7,7 +8,12 @@
         'data/payment_provider_data.xml',
         'data/payment_method_data.xml'
     ],
-    'depends': ['base', 'payment_razorpay','payment_razorpay_oauth','payment'],
+    'assets': {
+        'web.assets_frontend': [
+            'razorpay_payment/static/src/js/payment_form.js',
+        ],
+    },
+    'depends': ['base','payment_razorpay','payment_razorpay_oauth','payment'],
     'installable': True,
     'auto_install': False,
 }

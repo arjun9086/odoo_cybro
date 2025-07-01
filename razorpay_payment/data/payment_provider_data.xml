@@ -13,9 +13,4 @@
                          ref('payment.payment_method_netbanking'),
                      ])]"/>
     </record>
-<!--    <record id="account_payment_method_razorpay_payment" model="account.payment.method">-->
-<!--        <field name="name">RazorPay</field>-->
-<!--        <field name="code">new_razorpay</field>-->
-<!--        <field name="payment_type">inbound</field>-->
-<!--    </record>-->
 </odoo>
