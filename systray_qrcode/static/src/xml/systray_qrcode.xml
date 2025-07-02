@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+           <t t-name="systray_qrcode" owl="1">
+               <Dropdown>
+               <div class="new_icon">
+                  <div class="icon_div">
+                      <div class="toggle-icon" role="button">
+                   <i
+                           class="fa fa-qrcode"
+                           title="Qr Code"
+                           style="color: white; margin-bottom:10px; padding:10px;font-size:19px;"
+                   /></div>
+               </div>
+               </div>
+                   <t t-set-slot="content">
+               <DropdownItem onSelected="() => this.openSaleOrders()">
+                   Sale Orders
+               </DropdownItem>
+                       <button name="generate_qrcode" type="object" string="Generate" class="btn-primary"/>
+                   </t>
+               </Dropdown>
+           </t>
+        </templates>
