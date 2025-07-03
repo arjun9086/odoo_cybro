@@ -48,7 +48,7 @@ class PaymentTransaction(models.Model):
             'amount': converted_amount,
             'currency': self.currency_id.name,
         }
-        if self.operation in ['online_direct', 'validation']:
+        if self.operation in ['online_direct', 'validation']:#used for emi,card saving
             payload['customer_id'] = customer_id
             if self.tokenize:
                 payload['token'] = {

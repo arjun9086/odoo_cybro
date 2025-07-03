@@ -11,7 +11,9 @@ paymentForm.include({
             this._super(...arguments);
             return;
         }
-        // Overwrite the flow of the select payment method.
+        if (flow === 'token') {
+            return;
+        }
         this._setPaymentFlow('direct');
     },
     async _processDirectFlow(providerCode, paymentOptionId, paymentMethodCode, processingValues) {
@@ -25,7 +27,9 @@ paymentForm.include({
         RazorpayJS.open();
         RazorpayJS.on('payment.failed', response => {
             this._displayErrorDialog(_t("Payment processing failed"), response.error.description);
+//            window.location.href = '/shop';
         });
+
     },
     _prepareRazorpayOptions(processingValues) {
         return Object.assign({}, processingValues, {

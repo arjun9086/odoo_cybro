@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
-import hashlib
-import hmac
 import logging
 from odoo import http
 from odoo.http import request
 import json
 
 _logger = logging.getLogger(__name__)
-
 
 class RazorpayController(http.Controller):
 
