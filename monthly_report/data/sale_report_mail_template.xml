@@ -1,0 +1,18 @@
+<odoo>
+    <data>
+        <record id="sale_report_template" model="mail.template">
+            <field name="name">Sales Report Template</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="subject">Sales Report</field>
+            <field name="email_from">${(user.email)}</field>
+            <field name="email_to">${object.email}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear ${object.name},</p>
+                    <p>Please find the attached sales report.</p>
+                    <p>Regards,<br/>${user.name}</p>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>
