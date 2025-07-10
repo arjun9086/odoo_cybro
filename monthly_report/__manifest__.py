@@ -6,9 +6,9 @@
     'data': [
         'views/res_config_settings_view.xml',
         'data/ir_cron_data.xml',
-        'data/sale_report_mail_template.xml',
-        'report/sale_report_view.xml',
-        'report/sale_report_template.xml',
+        'data/sale_report_template.xml',
+        'report/sale_report.xml',
+        'report/sale_report_pdf_template.xml',
     ],
     'depends': ['sale'],
     'installable': True,

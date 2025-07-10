@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="sale_report_pdf_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-set="docs" t-value="docs"/>
+                <t t-set="method" t-value="custom_values.get('method').title()"/>
+                <t t-set="team" t-value="custom_values.get('team').title()"/>
+                <div class="page">
+                    <h2>Sales Report</h2>
+                    <p>
+                        <span style="display: inline-block; min-width: 200px;">
+                            <strong>Method:</strong>
+                            <t t-esc="method or 'N/A'"/>
+                        </span>
+                        <span style="display: inline-block; min-width: 200px;">
+                            <strong>Printing Date:</strong>
+                            <t t-esc="time.strftime('%Y-%m-%d')"/>
+                        </span>
+                    </p>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <!--                                <th>Sale Team</th>-->
+                                <th>Amount Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="order">
+                                <tr>
+                                    <td>
+                                        <t t-esc="order.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="order.partner_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="order.date_order.strftime('%Y-%m-%d')"/>
+                                    </td>
+                                    <!--                                    <td>-->
+                                    <!--                                        <t t-esc="order.team_id.name"/>-->
+                                    <!--                                    </td>-->
+                                    <td>
+                                        <t t-esc="order.amount_total"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
