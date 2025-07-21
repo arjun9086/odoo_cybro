@@ -12,8 +12,8 @@ class ResConfigSettings(models.TransientModel):
     sales_team_id = fields.Many2one('crm.team', string='Sales team', config_parameter='sale_report.sales_team_id')
     start_date = fields.Datetime(string="Start Date", config_parameter='sale_report.start_date')
     end_date = fields.Datetime(string="End Date", config_parameter='sale_report.end_date')
-    method = fields.Selection(selection=[('weekly', 'Weekly'), ('monthly', 'Monthly'), ],
-                              string='Method', default='weekly', config_parameter='sale_report.method')
+    method = fields.Selection(selection=[('weekly', 'Weekly'), ('monthly', 'Monthly'), ], string='Method',
+                              default='weekly', config_parameter='sale_report.method')
 
     def set_values(self):
         super(ResConfigSettings, self).set_values()
@@ -28,5 +28,5 @@ class ResConfigSettings(models.TransientModel):
         ir_config = self.env['ir.config_parameter'].sudo()
         customer_ids = ir_config.get_param('sale_report.customer_ids', default='')
         res.update(
-            customer_ids=[(6, 0, list(map(int, customer_ids.split(','))))] if customer_ids else False,)
+            customer_ids=[(6, 0, list(map(int, customer_ids.split(','))))] if customer_ids else False, )
         return res

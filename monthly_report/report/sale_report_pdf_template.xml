@@ -24,7 +24,6 @@
                                 <th>Order ID</th>
                                 <th>Customer</th>
                                 <th>Date</th>
-                                <!--                                <th>Sale Team</th>-->
                                 <th>Amount Total</th>
                             </tr>
                         </thead>
@@ -40,9 +39,6 @@
                                     <td>
                                         <t t-esc="order.date_order.strftime('%Y-%m-%d')"/>
                                     </td>
-                                    <!--                                    <td>-->
-                                    <!--                                        <t t-esc="order.team_id.name"/>-->
-                                    <!--                                    </td>-->
                                     <td>
                                         <t t-esc="order.amount_total"/>
                                     </td>

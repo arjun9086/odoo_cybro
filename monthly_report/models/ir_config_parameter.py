@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """ir_config_parameter"""
 import base64
-import logging
 from odoo import models, fields
 
 class IrConfigParameter(models.Model):
@@ -10,10 +9,8 @@ class IrConfigParameter(models.Model):
 
     def _cron_send_sales_reports(self):
         """sending sales report"""
-        _logger = logging.getLogger(__name__)
-        config_param = self.env['ir.config_parameter'].sudo()
+        config_param = self.env['ir.config_parameter']
         if config_param.get_param('sale_report.is_sale_report') != 'True':
-            _logger.info("Sales report is disabled, skipping report generation.")
             return
         today = fields.Date.today()
         method = config_param.get_param('sale_report.method')
@@ -21,12 +18,10 @@ class IrConfigParameter(models.Model):
         end_date = config_param.get_param('sale_report.end_date')
         team_id = config_param.get_param('sale_report.sales_team_id')
         customer_ids_str = config_param.get_param('sale_report.customer_ids')
-        _logger.debug("Parameters: method=%s, start_date=%s, end_date=%s, team_id=%s, customer_ids_str=%r",
-                      method, start_date, end_date, team_id, customer_ids_str)
         # Validate parameters
         if not start_date or not end_date:
             return
-        if method == 'weekly' and today.weekday() != 3:
+        if method == 'weekly' and today.weekday() != 0:
             return
         if method == 'monthly' and today.day != 10:
             return
@@ -49,16 +44,14 @@ class IrConfigParameter(models.Model):
             orders = self.env['sale.order'].sudo().search(domain)
             if not orders:
                 return
-            pdf_content, _ = self.env['ir.actions.report']._render_qweb_pdf('monthly_report.action_sale_report',
-                                                                            res_ids=orders.ids,
-                                                                            data={
-                                                                                'custom_values': {
-                                                                                    'method': method,
-                                                                                    'team': self.env['crm.team'].browse(
-                                                                                        int(team_id)).name if team_id and
-                                                                                                              team_id != 'False' else 'All Teams',
-                                                                                }
-                                                                            })
+            pdf_content, _ = (self.env['ir.actions.report']._render_qweb_pdf
+                              ('monthly_report.action_sale_report', res_ids=orders.ids,
+                               data={'custom_values': {
+                                   'method': method,
+                                   'team': self.env['crm.team'].browse(int(team_id)).name
+                                   if team_id and team_id != 'False' else 'All Teams',
+                               }
+                               }))
             # Create attachment
             attachment = self.env['ir.attachment'].sudo().create({
                 'name': f'Sales_Report_{customer.name}.pdf',

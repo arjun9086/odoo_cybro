@@ -1,23 +1,29 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-           <t t-name="systray_qrcode" owl="1">
-               <Dropdown>
-               <div class="new_icon">
-                  <div class="icon_div">
-                      <div class="toggle-icon" role="button">
-                   <i
-                           class="fa fa-qrcode"
-                           title="Qr Code"
-                           style="color: white; margin-bottom:10px; padding:10px;font-size:19px;"
-                   /></div>
-               </div>
-               </div>
-                   <t t-set-slot="content">
-               <DropdownItem onSelected="() => this.openSaleOrders()">
-                   Sale Orders
-               </DropdownItem>
-                       <button name="generate_qrcode" type="object" string="Generate" class="btn-primary"/>
-                   </t>
-               </Dropdown>
-           </t>
-        </templates>
+    <t t-name="systray_qrcode" owl="1">
+        <div class="o_systray_qrcode">
+            <div role="button" t-on-click="togglePopover">
+                <i class="fa fa-qrcode" title="QR Code"
+                   style="color: white; font-size: 19px; padding: 10px;" role="img"/>
+            </div>
+            <t t-if="state.isVisible">
+                <div class="dropdown-menu show" style="width: 300px; right: 0; left: auto; padding: 10px;">
+                    <h6 class="dropdown-header">Generate QR</h6>
+                    <input type="text" class="form-control mb-2" t-model="state.inputText"/>
+                    <div class="d-flex justify-content-between mb-2">
+                        <button class="btn btn-sm btn-primary" t-on-click="generateQR">Generate</button>
+                        <button class="btn btn-sm btn-secondary" t-on-click="reset">Reset</button>
+                    </div>
+                    <div t-ref="hiddenQR" style="display: none;"/>
+                    <t t-if="state.qrcodeUrl">
+                        <div class="text-center">
+                            <img t-att-src="state.qrcodeUrl"/>
+                            <br/>
+                            <button class="btn btn-sm btn-success mt-2" t-on-click="downloadQR">Download</button>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

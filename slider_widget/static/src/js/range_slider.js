@@ -2,6 +2,7 @@
 import { Component } from "@odoo/owl";
 import { useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
+
 export class RangeSliderField extends Component {
   static template = 'RangeSliderTemplate';
   setup(){

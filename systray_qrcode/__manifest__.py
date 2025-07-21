@@ -5,6 +5,7 @@
     'version': '1.0',
     'assets': {
         'web.assets_backend': [
+            'systray_qrcode/static/lib/qrcodejs/qrcode.min.js',
             'systray_qrcode/static/src/js/systray_qrcode.js',
             'systray_qrcode/static/src/xml/systray_qrcode.xml',
         ],

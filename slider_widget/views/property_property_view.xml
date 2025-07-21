@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="property_property_form" model="ir.ui.view">
         <field name="name">property.property.form.inherit</field>
         <field name="model">property.property</field>
         <field name="inherit_id" ref="property.property_property_view_form"/>
         <field name="arch" type="xml">
-            <field name="legal_amount" position="after">
+            <xpath expr="//field[@name='legal_amount']" position="after">
                 <field name="quality_mark" widget="RangeSliderField"/>
-            </field>
+            </xpath>
         </field>
     </record>
 </odoo>
