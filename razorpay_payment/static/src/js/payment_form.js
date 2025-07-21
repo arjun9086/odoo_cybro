@@ -27,7 +27,6 @@ paymentForm.include({
         RazorpayJS.open();
         RazorpayJS.on('payment.failed', response => {
             this._displayErrorDialog(_t("Payment processing failed"), response.error.description);
-//            window.location.href = '/shop';
         });
 
     },
@@ -75,5 +74,4 @@ paymentForm.include({
             },
         });
     },
-
 });
