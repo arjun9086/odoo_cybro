@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_picking" inherit_id="stock.report_picking">
+        <xpath expr="//div[@class='row mt16 mb16']" position="before">
+            <div class="row mt16 mb16" t-if="o.delivery_warning">
+                <h4 class="text-danger">Do Not Delivered Yet!</h4>
+            </div>
+        </xpath>
+    </template>
+</odoo>
