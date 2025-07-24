@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+  <t t-name="module.stock.ListView.Filter" t-inherit="web.ListView">
+    <xpath expr="//Layout/t[@t-set-slot='control-panel-create-button']" position="after">
+        <div class="w-100 d-flex align-items-center gap-2 py-2 px-3  mb-3" style="max-width: 400px;">
+        <label class="me-2 fw-bold">  Salesperson: </label>
+            <select class="form-select w-auto" t-ref="salespersonDropdown" t-on-change="onSalespersonChange">
+          <option value=""> Select Salesperson </option>
+                <t t-foreach="state.salespersons" t-as="sp" t-key="sp.id">
+             <option t-att-value="sp.id" t-esc="sp.name"/>
+          </t>
+        </select>
+      </div>
+    </xpath>
+  </t>
+</templates>
+
