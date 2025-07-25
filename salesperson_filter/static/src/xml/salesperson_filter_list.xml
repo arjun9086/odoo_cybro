@@ -5,9 +5,10 @@
         <div class="w-100 d-flex align-items-center gap-2 py-2 px-3  mb-3" style="max-width: 400px;">
         <label class="me-2 fw-bold">  Salesperson: </label>
             <select class="form-select w-auto" t-ref="salespersonDropdown" t-on-change="onSalespersonChange">
-          <option value=""> Select Salesperson </option>
+          <option value=""> All </option>
                 <t t-foreach="state.salespersons" t-as="sp" t-key="sp.id">
-             <option t-att-value="sp.id" t-esc="sp.name"/>
+             <option t-att-value="sp.id" t-esc="sp.name"
+                     t-att-selected="sp.id.toString() === state.selectedSalesperson ? 'selected' : false"/>
           </t>
         </select>
       </div>

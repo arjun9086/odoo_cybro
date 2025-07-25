@@ -13,6 +13,6 @@
        # 'salesperson_filter/static/src/js/salesperson_search_filter.js',
    ],
 },
-    'depends': ['crm'],
+    'depends': ['crm','base','web'],
     'installable':'True'
 }
