@@ -6,7 +6,7 @@
     'data': [
         'views/res_config_settings_views.xml',
     ],
-    'depends': ['base','sale', 'website_sale', 'website'],
+    'depends': ['base','sale', 'website_sale', 'website','product'],
     'installable': True,
     'auto_install': False,
 }
