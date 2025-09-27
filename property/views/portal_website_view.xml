@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="portal_my_home_rental_orders" inherit_id="portal.portal_my_home" name="My Portal: Rental Orders">
+        <xpath expr="//div[@id='portal_common_category']" position="after">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/property/static/src/img/portal-addresses.svg'"/>
+                <t t-set="title">Rental Orders</t>
+                <t t-set="text">View your rental orders</t>
+                <t t-set="url" t-value="'/my/rental_orders'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>

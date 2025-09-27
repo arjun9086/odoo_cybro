@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_pos_config_form_discount_limit" model="ir.ui.view">
+            <field name="name">pos.config.form.discount.limit</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_config_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='pricing']" position="inside">
+                    <field name="session_discount_limit" attrs="{'invisible': [('module_pos_discount', '=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,33 @@
+<odoo>
+  <template id="report_custom_sale">
+    <t t-call="web.html_container">
+      <t t-foreach="docs" t-as="o">
+        <div class="page">
+          <h2>Sales Report for <t t-esc="o.name"/></h2>
+          <p><strong>Customer:</strong> <t t-esc="o.partner_id.name"/></p>
+          <p><strong>Order Date:</strong> <t t-esc="o.date_order.strftime('%Y-%m-%d')"/></p>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="o.order_line" t-as="line">
+                <tr>
+                  <td><t t-esc="line.product_id.display_name"/></td>
+                  <td><t t-esc="line.product_uom_qty"/></td>
+                  <td><t t-esc="line.price_unit"/></td>
+                  <td><t t-esc="line.price_subtotal"/></td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+        </div>
+      </t>
+    </t>
+  </template>
+</odoo>

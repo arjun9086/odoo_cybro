@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="pos_session_discount_limit" name="POS Session Discount Limit" inherit_id="point_of_sale.PosSession">
+            <xpath expr="." position="inside">
+                <t t-set="fields" t-value="fields + ['max_discount_limit', 'total_discount_applied']"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>

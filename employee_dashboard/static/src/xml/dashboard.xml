@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t t-name="employee_dashboard.EmployeeDashboard" owl="1">
+        <div class="container mt-4 px-4"
+             style="max-height: 90vh; overflow-y: scroll; scroll-behavior: smooth;">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold text-dark mb-0">Employee Dashboard</h3>
+                <div class="d-flex align-items-center gap-3 ms-auto">
+                    Start:
+                    <input type="date" t-model="filter.start_date" class="form-control form-control-sm"/>
+                    End:
+                    <input type="date" t-model="filter.end_date" class="form-control form-control-sm"/>
+                    <button class="btn btn-primary btn-sm" t-on-click="onDateRangeApply">Apply</button>
+                </div>
+            </div>
+            <!-- Profile Section -->
+            <div class="row justify-content-start mb-4" t-if="state.data">
+                <div class="col-mb-6">
+                    <div class="d-flex align-items-center shadow-sm p-4 bg-white rounded-4 border-0">
+                        <!-- Profile Image -->
+                        <div class="me-4">
+                            <img t-att-src="'data:image/png;base64,' + state.data.employee_image" alt="Profile"
+                                 class="rounded-circle border" style="width: 120px; height: 120px; object-fit: cover;"/>
+                        </div>
+                        <!-- Profile Info -->
+                        <div>
+                            <h4 class="fw-bold text-dark mb-2" style="font-size:30px;">
+                                <t t-esc="state.data.employee_name"/>
+                            </h4>
+                            <div class="text-muted small mb-1" style="font-size:12px">
+                                <i class="fa fa-envelope me-2"/>
+                                <t t-esc="state.data.employee_email"/>
+                            </div>
+                            <div class="text-muted small" style="font-size:12px">
+                                <i class="fa fa-phone me-2"/>
+                                <t t-esc="state.data.employee_phone"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modern Rounded Summary Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3" t-if="state.data" data-type="attendance" t-on-click="onCardClick">
+                    <div class="d-flex align-items-center shadow-sm p-3 bg-white rounded-4 border-0">
+                        <div class="me-3">
+                            <i class="fa fa-users fa-2x text-danger"/>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Total Attendance</div>
+                            <div class="fs-5 fw-bold">
+                                <t t-esc="state.data.total_attendance"/>
+                                hrs
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" t-if="state.data" data-type="leave" t-on-click="onCardClick">
+                    <div class="d-flex align-items-center shadow-sm p-3 bg-white rounded-4 border-0">
+                        <div class="me-3">
+                            <i class="fa fa-calendar-times-o fa-2x text-warning"/>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Leaves Taken</div>
+                            <div class="fs-5 fw-bold">
+                                <t t-esc="state.data.total_leaves"/>
+                                Days
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" t-if="state.data" data-type="project" t-on-click="onCardClick">
+                    <div class="d-flex align-items-center shadow-sm p-3 bg-white rounded-4 border-0">
+                        <div class="me-3">
+                            <i class="fa fa-briefcase fa-2x text-primary"/>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Projects</div>
+                            <div class="fs-5 fw-bold">
+                                <t t-esc="state.data.total_projects"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" t-if="state.data" data-type="task" t-on-click="onCardClick">
+                    <div class="d-flex align-items-center shadow-sm p-3 bg-white rounded-4 border-0">
+                        <div class="me-3">
+                            <i class="fa fa-tasks fa-2x text-purple"/>
+                        </div>
+                        <div>
+                            <div class="text-muted small">Tasks</div>
+                            <div class="fs-5 fw-bold">
+                                <t t-esc="state.data.tasks.length"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Org chart + Experience -->
+            <div class="row g-4">
+                <!-- Experience -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm p-4 bg-white">
+                        <h5 class="text-success border-bottom pb-2 mb-3">Experience</h5>
+                        <t t-if="state.data and state.data.experience.length">
+                            <t t-foreach="state.data.experience" t-as="line" t-key="line.name">
+                                <div class="mb-3">
+                                    <div class="fw-bold text-dark">
+                                        <t t-esc="line.name"/>
+                                    </div>
+                                    <div class="text-muted small mb-1">
+                                        <t t-esc="line.date_start"/>
+                                        –
+                                        <t t-esc="line.date_end or 'Present'"/>
+                                    </div>
+                                    <div class="text-muted">
+                                        <t t-esc="line.description"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+                <!-- Org Chart -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm bg-white p-4">
+                        <h5 class="text-danger border-bottom pb-2 mb-3">Organizational Hierarchy</h5>
+                        <!-- Top-level: Manager chain -->
+                        <t t-if="state.data and state.data.org_managers.length">
+                            <div class="mb-2">
+                                <t t-foreach="state.data.org_managers" t-as="mgr" t-key="mgr.id">
+                                    <div class="ms-0 ps-0 border-end border-2 ps-3 mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <img t-att-src="'/web/image/hr.employee/' + mgr.id + '/image_128'"
+                                                 class="rounded-circle me-3 border"
+                                                 style="width: 36px; height: 36px;" t-if="mgr.id"/>
+                                            <div class="fw-medium text-dark">
+                                                <t t-esc="mgr.name"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </t>
+                        <!-- Current employee -->
+                        <div class="text-center my-3">
+                            <t t-if="state.data and state.data.org_employee">
+                                <img t-att-src="'/web/image/hr.employee/' + state.data.org_employee.id + '/image_128'"
+                                     class="rounded-circle border mb-2"
+                                     style="width: 60px; height: 60px;"/>
+                                <div class="fw-bold text-dark">
+                                    <t t-esc="state.data.org_employee.name"/>
+                                </div>
+                            </t>
+                        </div>
+                        <!-- Recursive Child Renderer -->
+                        <t t-call="employee_dashboard.RecursiveSubordinates">
+                            <t t-if="state.data and state.data.org_employee">
+                                <t t-set="nodes" t-value="state.data.org_employee.children"/>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm p-4 mt-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-primary mb-0">Task Overview</h5>
+                    <select class="form-select form-select-sm w-auto" t-on-change="onDeadlineFilterChange">
+                        <option value="all">All</option>
+                        <option value="this_month">This Month</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="overdue">Overdue</option>
+                    </select>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle">
+                        <thead class="border-bottom text-uppercase small text-muted">
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Project Type</th>
+                                <th>Deadline</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="filteredTasks.list.length">
+                                <t t-foreach="filteredTasks.list" t-as="task" t-key="task.id">
+                                    <tr class="border-bottom" t-on-click="onTaskClick" t-att-data-task-id="task.id">
+                                        <td>
+                                            <t t-esc="task.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="task.project"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="task.deadline"/>
+                                        </td>
+                                        <td>
+                                            <span t-if="task.stage == 'In Progress'" class="text-primary fw-semibold">
+                                                In Progress
+                                            </span>
+                                            <span t-if="task.stage == 'Completed'" class="text-success fw-semibold">
+                                                Completed
+                                            </span>
+                                            <span t-if="!['In Progress','Completed']
+                                            .includes(task.stage)"
+                                                  class="text-muted">
+                                                <t t-esc="task.stage"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-if="!state.data or !state.data.tasks.length">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No tasks found.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row g-2 my-2">
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 p-3">
+                        <h6 class="fw-bold text-dark">Projects</h6>
+                        <canvas id="taskProjectChart" height="220"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 p-3">
+                        <h6 class="fw-bold text-dark">Experience</h6>
+                        <canvas id="experienceChart" height="220"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+    <t t-name="employee_dashboard.RecursiveSubordinates" owl="1">
+        <div class="d-flex gap-4 mt-3 overflow-auto px-2" t-if="nodes and nodes.length" style="flex-wrap: nowrap;">
+            <t t-foreach="nodes" t-as="node" t-key="node.id">
+                <div class="text-center">
+                    <img t-att-src="'/web/image/hr.employee/' + node.id + '/image_128'"
+                         class="rounded-circle border mb-1"
+                         style="width: 48px; height: 48px;"/>
+                    <div class="fw-medium text-dark">
+                        <t t-esc="node.name"/>
+                    </div>
+                    <!-- Render their children recursively -->
+                    <t t-call="employee_dashboard.RecursiveSubordinates">
+                        <t t-set="nodes" t-value="node.children"/>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
+
+

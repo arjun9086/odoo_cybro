@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="view_website_sale_inherit" inherit_id="website_sale.cart_lines">
+        <xpath expr="//div[@name='o_wsale_cart_line_button_container']" position="before">
+            <t t-set="allowed_ids"
+               t-value="request.env['ir.config_parameter'].sudo().get_param('my_website_bom.bom_product_ids', '')"/>
+            <t t-set="allowed_list" t-value="[int(x) for x in allowed_ids.split(',') if x]"/>
+            <t t-if="line.product_id.id in allowed_list">
+                <div class="mb-2">
+                    <strong>Bill of Materials</strong>
+                    <t t-foreach="line.product_id.bom_ids" t-as="bom">
+                        <ul class="list-group">
+                            <t t-foreach="bom.bom_line_ids" t-as="bom_line">
+                                <li class="list-group-item">
+                                    <a t-attf-href="bom_line.product_id.product_tmpl_id.website_url or '/shop'">
+                                        <t t-esc="bom_line.product_id.display_name"/>:
+                                        <t t-esc="bom_line.product_qty"/>
+                                    </a>
+                                </li>
+                            </t>
+                        </ul>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="payment_method_new_razorpay" model="payment.method">
+        <field name="name">RazorPay</field>
+        <field name="code">new_razorpay</field>
+        <field name="sequence">13</field>
+        <field name="active">False</field>
+        <field name="image" type="base64" file="razorpay_payment/static/img/razorpay.png"/>
+        <field name="support_tokenization">True</field>
+        <field name="support_express_checkout">False</field>
+        <field name="support_refund">partial</field>
+    </record>
+    <record id="payment_method_new_razorpay_old" model="payment.method">
+        <field name="name">Razor_Pay</field>
+        <field name="code">new_razorpay</field>
+        <field name="sequence">15</field>
+        <field name="active">True</field>
+        <field name="image" type="base64" file="razorpay_payment/static/img/razorpay.png"/>
+        <field name="support_tokenization">True</field>
+        <field name="support_express_checkout">False</field>
+        <field name="support_refund">partial</field>
+    </record>
+</odoo>

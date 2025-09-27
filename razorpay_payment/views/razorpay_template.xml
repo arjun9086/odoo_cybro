@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="razorpay_payment_form" name="Razorpay Payment Form">
+        <form id="razorpay-redirect-form" t-att-action="callback_url" method="POST">
+            <input type="hidden" name="key" t-att-value="razorpay_key_id"/>
+            <input type="hidden" name="order_id" t-att-value="razorpay_order_id"/>
+            <input type="hidden" name="customer_id" t-att-value="razorpay_customer_id"/>
+            <input type="hidden" name="amount" t-att-value="amount"/>
+            <input type="hidden" name="currency" t-att-value="currency"/>
+            <input type="hidden" name="tx_reference" t-att-value="tx_reference"/>
+        </form>
+        <script>
+            document.getElementById("razorpay-redirect-form").submit();
+        </script>
+    </template>
+</odoo>
